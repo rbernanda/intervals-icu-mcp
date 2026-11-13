@@ -38,7 +38,9 @@ describe('reproducible instance setup', () => {
       secrets: { required: [...INSTANCE_SECRETS] },
     });
     expect(template).toEqual(original);
-    for (const key of INSTANCE_SECRETS) expect(config.vars).not.toHaveProperty(key);
+    for (const key of INSTANCE_SECRETS) {
+      expect(config.vars).not.toHaveProperty(key);
+    }
   });
   it('refuses HTTP public deployment, invalid KV IDs, usernames and unsupported settings', () => {
     for (const invalid of [
@@ -48,10 +50,11 @@ describe('reproducible instance setup', () => {
       { owner_github_id: 'a-username' },
       { timezone: 'Unknown/Zone' },
       { api_key: 'never-accept-credentials-here' },
-    ])
+    ]) {
       expect(() => prepareDeployment({ ...settings, ...invalid }, template)).toThrow(
         'Invalid instance',
       );
+    }
   });
   it('does not copy upstream credentials accidentally placed in base vars', () => {
     const config = prepareDeployment(settings, {
@@ -77,7 +80,9 @@ describe('reproducible instance setup', () => {
     try {
       await assertNewFile(path);
       await writePrivateFile(path, 'SYNTHETIC=true\n');
-      if (process.platform !== 'win32') expect((await stat(path)).mode & 0o777).toBe(0o600);
+      if (process.platform !== 'win32') {
+        expect((await stat(path)).mode & 0o777).toBe(0o600);
+      }
       await expect(assertNewFile(path)).rejects.toThrow('already exists');
       await expect(writePrivateFile(path, 'overwritten')).rejects.toThrow();
       expect(await readFile(path, 'utf8')).toBe('SYNTHETIC=true\n');
@@ -94,8 +99,9 @@ describe('publication safeguards', () => {
       '.dev.vars',
       'wrangler.instance.jsonc',
       '.wrangler/state/db',
-    ])
+    ]) {
       expect(publicationProblems(path, 'synthetic')).not.toEqual([]);
+    }
     expect(publicationProblems('.env.example', 'INTERVALS_API_KEY=replace-locally')).toEqual([]);
   });
   it('detects representative credential leakage without exposing the matched value', () => {

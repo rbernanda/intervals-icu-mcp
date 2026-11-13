@@ -36,7 +36,7 @@ Do not add multi-user tenancy, centralized credential collection, a hosted SaaS 
 2. Make focused changes; reuse native APIs and keep runtime dependencies small.
 3. Add meaningful tests for changed behavior and security boundaries. Include empty, null, malformed and unauthorized cases where relevant.
 4. Use **synthetic** fixtures only. Invent athlete IDs, names, timestamps and metrics; do not anonymize and commit a real activity export. Do not attach real wellness payloads, logs, OAuth callback URLs containing codes, or screenshots containing credentials.
-5. Run the commands above. Run `pnpm format` to apply ESLint fixes followed by Prettier. ESLint enforces blank lines around function declarations/assigned functions and between class methods; Prettier preserves them. Add JSDoc for non-obvious semantics, invariants or security boundaries rather than restating straightforward code.
+5. Run the commands above. Run `pnpm format` to apply ESLint fixes followed by Prettier. ESLint uses type-aware checks, requires braces and strict equality (allowing `== null` for nullish checks), and checks exhaustive switches. It also enforces blank lines around functions and between class methods; Prettier preserves them. Within functions, group related declarations and separate distinct steps with blank lines. Add JSDoc for non-obvious semantics, invariants or security boundaries rather than restating straightforward code.
 6. If changing Wrangler configuration, run `pnpm types` and commit the generated declarations. Update examples, authentication/client documentation and limits with the code.
 7. Update the lockfile when dependencies change. Consult primary documentation before SDK/API changes; keep Inspector checks working in both supported protocol eras.
 

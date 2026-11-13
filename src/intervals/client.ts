@@ -48,8 +48,12 @@ const INTERVAL_FIELDS = [
 
 /** Parses either Retry-After seconds or an HTTP date; malformed headers use the bounded backoff policy. */
 export function retryAfterMs(value: string | null, now: number): number | undefined {
-  if (!value) return undefined;
-  if (/^\d+(\.\d+)?$/.test(value.trim())) return Math.ceil(Number(value) * 1000);
+  if (!value) {
+    return undefined;
+  }
+  if (/^\d+(\.\d+)?$/.test(value.trim())) {
+    return Math.ceil(Number(value) * 1000);
+  }
   const parsed = Date.parse(value);
   return Number.isFinite(parsed) ? Math.max(0, parsed - now) : undefined;
 }
@@ -82,15 +86,17 @@ export class IntervalsClient {
   private readonly timeoutMs: number;
 
   constructor(private readonly options: ClientOptions) {
-    if (!options.apiKey || !/^(0|i?[1-9]\d*)$/.test(options.athleteId))
+    if (!options.apiKey || !/^(0|i?[1-9]\d*)$/.test(options.athleteId)) {
       throw new AppError('configuration', 'Invalid Intervals client configuration.');
+    }
     this.requestFetch = (options.fetch ?? fetch).bind(globalThis);
     this.sleep = options.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
     this.logger = options.logger ?? log;
     this.now = options.now ?? Date.now;
     this.timeoutMs = options.timeoutMs ?? 10000;
-    if (!Number.isInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 20000)
+    if (!Number.isInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 20000) {
       throw new AppError('configuration', 'Invalid upstream timeout.');
+    }
   }
 
   private athletePath(suffix = ''): string {
@@ -107,16 +113,21 @@ export class IntervalsClient {
     query: Record<string, string | number | boolean> = {},
   ): Promise<T> {
     // No caller-provided hosts, paths outside the API, redirects, or mutation methods.
-    if (!/^\/api\/v1\/(athlete|activity)\/[A-Za-z0-9_-]+(?:\/[A-Za-z]+)?$/.test(path))
+    if (!/^\/api\/v1\/(athlete|activity)\/[A-Za-z0-9_-]+(?:\/[A-Za-z]+)?$/.test(path)) {
       throw new AppError('invalid_input', 'Unsupported API path.');
+    }
     const url = new URL(path, API_ORIGIN);
-    for (const [key, value] of Object.entries(query)) url.searchParams.set(key, String(value));
+    for (const [key, value] of Object.entries(query)) {
+      url.searchParams.set(key, String(value));
+    }
     const started = this.now();
     const deadline = this.options.deadlineAtMs ?? started + UPSTREAM_BUDGET_MS;
     try {
       for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         const remaining = deadline - this.now();
-        if (remaining <= 0) throw new AppError('timeout', 'Upstream request budget exhausted.');
+        if (remaining <= 0) {
+          throw new AppError('timeout', 'Upstream request budget exhausted.');
+        }
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), Math.min(this.timeoutMs, remaining));
         let error: AppError;
@@ -133,11 +144,12 @@ export class IntervalsClient {
           });
           if (response.ok) {
             const parsed = schema.safeParse(await readBoundedJson(response, MAX_RESPONSE_BYTES));
-            if (!parsed.success)
+            if (!parsed.success) {
               throw new AppError(
                 'invalid_response',
                 'Intervals.icu returned an unexpected response shape.',
               );
+            }
             this.logger({
               event: 'upstream',
               outcome: 'ok',
@@ -149,10 +161,14 @@ export class IntervalsClient {
           waitMs = retryAfterMs(response.headers.get('retry-after'), this.now());
           await response.body?.cancel();
           error = statusError(response.status, waitMs);
-          if (response.status !== 429 && response.status < 500) throw error;
+          if (response.status !== 429 && response.status < 500) {
+            throw error;
+          }
         } catch (caught) {
           if (caught instanceof AppError) {
-            if (!['rate_limited', 'upstream_unavailable'].includes(caught.category)) throw caught;
+            if (!['rate_limited', 'upstream_unavailable'].includes(caught.category)) {
+              throw caught;
+            }
             error = caught;
           } else {
             error = controller.signal.aborted
@@ -163,8 +179,13 @@ export class IntervalsClient {
           clearTimeout(timeout);
         }
         const delay = waitMs ?? 250 * 2 ** attempt;
-        if (attempt === MAX_RETRIES || delay > MAX_RETRY_WAIT_MS || this.now() + delay >= deadline)
+        if (
+          attempt === MAX_RETRIES ||
+          delay > MAX_RETRY_WAIT_MS ||
+          this.now() + delay >= deadline
+        ) {
           throw error;
+        }
         await this.sleep(delay);
       }
       throw new AppError('internal', 'Request could not be completed.');

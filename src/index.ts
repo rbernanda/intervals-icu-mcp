@@ -32,16 +32,20 @@ export function createWorker(requestFetch: typeof fetch = fetch, logger: Logger 
       try {
         const config = parseConfig(env);
         const url = new URL(request.url);
-        if (!isAllowedRequestOrigin(request, config))
+        if (!isAllowedRequestOrigin(request, config)) {
           return finish(new Response('Forbidden', { status: 403 }));
+        }
         corsOrigin = request.headers.get('origin') ?? undefined;
         const preflight = preflightResponse(request, config.OAUTH_ENABLE_DCR);
-        if (preflight) return finish(preflight);
+        if (preflight) {
+          return finish(preflight);
+        }
         if (
           request.method === 'POST' &&
           Number(request.headers.get('content-length')) > MAX_REQUEST_BYTES
-        )
+        ) {
           return finish(new Response('Request too large', { status: 413 }));
+        }
         if (
           request.method === 'POST' &&
           ['/authorize', '/oauth/token', '/oauth/register'].includes(url.pathname) &&

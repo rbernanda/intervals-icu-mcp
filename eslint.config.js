@@ -23,16 +23,19 @@ export default tseslint.config(
     ],
   },
   js.configs.recommended,
-  ...tseslint.configs.recommended,
   {
     files: ['**/*.ts'],
+    extends: [...tseslint.configs.recommendedTypeChecked],
     plugins: { '@stylistic': stylistic },
     languageOptions: {
       parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
     },
     rules: {
+      curly: ['error', 'all'],
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@stylistic/padding-line-between-statements': [
         'error',
         { blankLine: 'always', prev: '*', next: functionStatements },
@@ -66,6 +69,13 @@ export default tseslint.config(
           ],
         },
       ],
+    },
+  },
+  {
+    files: ['tests/**/*.ts'],
+    rules: {
+      // Fetch and KV doubles intentionally return promises without asynchronous work.
+      '@typescript-eslint/require-await': 'off',
     },
   },
   {

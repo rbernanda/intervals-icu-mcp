@@ -3,11 +3,23 @@ import type { Config } from '../config/env';
 import { AppError } from '../utils/errors';
 import { readBoundedJson } from '../utils/http';
 
+const GITHUB_TIMEOUT_MS = 10_000;
+const TOKEN_RESPONSE_MAX_BYTES = 16_384;
+const USER_RESPONSE_MAX_BYTES = 65_536;
+
+const githubTokenSchema = z.object({
+  access_token: z.string().min(1),
+  token_type: z.string().refine((value) => value.toLowerCase() === 'bearer'),
+});
+
+const githubUserSchema = z.object({ id: z.number().int().positive().safe() });
+
 /** Produces the RFC 7636 S256 challenge using unpadded base64url encoding. */
 export async function pkceChallenge(verifier: string): Promise<string> {
   const hash = new Uint8Array(
     await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)),
   );
+
   return btoa(String.fromCharCode(...hash))
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
@@ -29,6 +41,7 @@ export async function githubAuthorizeUrl(
     code_challenge_method: 'S256',
     allow_signup: 'false',
   }).toString();
+
   return url.toString();
 }
 
@@ -45,7 +58,7 @@ export async function verifyGithubUser(
   const tokenResponse = await requestFetch('https://github.com/login/oauth/access_token', {
     method: 'POST',
     redirect: 'manual',
-    signal: AbortSignal.timeout(10000),
+    signal: AbortSignal.timeout(GITHUB_TIMEOUT_MS),
     headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       client_id: config.GITHUB_CLIENT_ID,
@@ -55,36 +68,42 @@ export async function verifyGithubUser(
       code_verifier: verifier,
     }),
   });
+
   if (!tokenResponse.ok) {
     await tokenResponse.body?.cancel();
     throw new AppError('upstream_unavailable', 'GitHub sign-in failed.');
   }
-  const parsed = z
-    .object({
-      access_token: z.string().min(1),
-      token_type: z.string().refine((s) => s.toLowerCase() === 'bearer'),
-    })
-    .safeParse(await readBoundedJson(tokenResponse, 16384));
-  if (!parsed.success)
+
+  const token = githubTokenSchema.safeParse(
+    await readBoundedJson(tokenResponse, TOKEN_RESPONSE_MAX_BYTES),
+  );
+
+  if (!token.success) {
     throw new AppError('upstream_forbidden', 'GitHub sign-in was not authorized.');
-  // GitHub token is used only for identity, then discarded; never persisted or returned to the MCP client.
+  }
+
   const userResponse = await requestFetch('https://api.github.com/user', {
     redirect: 'manual',
-    signal: AbortSignal.timeout(10000),
+    signal: AbortSignal.timeout(GITHUB_TIMEOUT_MS),
     headers: {
-      Authorization: `Bearer ${parsed.data.access_token}`,
+      Authorization: `Bearer ${token.data.access_token}`,
       Accept: 'application/vnd.github+json',
       'User-Agent': 'intervals-icu-mcp',
     },
   });
+
   if (!userResponse.ok) {
     await userResponse.body?.cancel();
     throw new AppError('upstream_forbidden', 'GitHub identity could not be verified.');
   }
-  const user = z
-    .object({ id: z.number().int().positive().safe() })
-    .safeParse(await readBoundedJson(userResponse, 65536));
-  if (!user.success || String(user.data.id) !== config.ALLOWED_GITHUB_USER_ID)
+
+  const user = githubUserSchema.safeParse(
+    await readBoundedJson(userResponse, USER_RESPONSE_MAX_BYTES),
+  );
+
+  if (!user.success || String(user.data.id) !== config.ALLOWED_GITHUB_USER_ID) {
     throw new AppError('upstream_forbidden', 'This GitHub account is not authorized.');
+  }
+
   return String(user.data.id);
 }

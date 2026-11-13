@@ -3,7 +3,9 @@ import { Writable } from 'node:stream';
 
 /** Prompt values never pass through the terminal output stream or process arguments. */
 export function createHiddenTerminal() {
-  if (!process.stdin.isTTY) throw new Error('Run setup in an interactive terminal.');
+  if (!process.stdin.isTTY) {
+    throw new Error('Run setup in an interactive terminal.');
+  }
   const muted = new Writable({
     write(_chunk, _encoding, callback) {
       callback();

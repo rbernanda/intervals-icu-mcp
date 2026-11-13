@@ -54,8 +54,9 @@ export async function handleAuthorization(
       return new Response(renderConsentPage(details, consent.handle), { headers: consent.headers });
     }
     if (url.pathname === '/authorize' && request.method === 'POST') {
-      if (request.headers.get('origin') !== config.PUBLIC_ORIGIN)
+      if (request.headers.get('origin') !== config.PUBLIC_ORIGIN) {
         return new Response('Forbidden', { status: 403 });
+      }
       const form = await request.formData();
       const handle = z.string().min(1).max(512).parse(form.get('handle'));
       if (form.get('decision') !== 'approve') {
@@ -65,8 +66,9 @@ export async function handleAuthorization(
       const approved = await oauth.approveConsent(request, handle, {
         scope: form.getAll('scope').map(String),
       });
-      if (!approved.request.scope.includes(READ_SCOPE))
+      if (!approved.request.scope.includes(READ_SCOPE)) {
         throw new AppError('invalid_input', 'Read scope is required.');
+      }
       const verifier = crypto.randomUUID() + crypto.randomUUID();
       const upstream = await oauth.beginUpstream(approved.request, {
         data: { verifier },
@@ -108,21 +110,24 @@ export async function handleAuthorization(
       url.pathname === '/authorize' &&
       error instanceof AuthorizationError &&
       error.redirectTo
-    )
+    ) {
       return Response.redirect(error.redirectTo, 302);
+    }
     if (
       error instanceof AuthorizationError ||
       error instanceof CimdFetchError ||
       error instanceof z.ZodError
-    )
+    ) {
       return new Response(
         'Invalid or expired authorization request. Restart sign-in from your MCP client.',
         { status: 400 },
       );
-    if (error instanceof AppError)
+    }
+    if (error instanceof AppError) {
       return new Response(error.message, {
         status: error.category === 'upstream_forbidden' ? 403 : 502,
       });
+    }
     throw error;
   }
 }

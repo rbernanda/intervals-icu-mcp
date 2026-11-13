@@ -44,10 +44,11 @@ export function prepareDeployment(
   template: Record<string, unknown>,
 ): Record<string, unknown> {
   const result = deploymentSchema.safeParse(input);
-  if (!result.success)
+  if (!result.success) {
     throw new Error(
       'Invalid instance settings. Check HTTPS origin, namespace ID, numeric owner ID, worker name and IANA timezone.',
     );
+  }
   const settings = result.data;
   const templateVars = z.record(z.string(), z.unknown()).parse(template.vars ?? {});
   const safeVars = Object.fromEntries(

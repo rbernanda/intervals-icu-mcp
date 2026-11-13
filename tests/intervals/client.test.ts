@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { IntervalsClient, retryAfterMs } from '../../src/intervals/client';
 import { readBoundedJson } from '../../src/utils/http';
+import { requestUrl } from '../helpers';
 const range = { start_date: '2026-11-01', end_date: '2026-11-13' };
 
 function setup(requestFetch: typeof fetch, timeoutMs = 1000) {
@@ -27,7 +28,7 @@ describe('Intervals client', () => {
     const { client } = setup(requestFetch);
     await client.activities(range);
     const [input, options] = requestFetch.mock.calls[0]!;
-    const url = new URL(String(input));
+    const url = new URL(requestUrl(input));
     expect(url.origin).toBe('https://intervals.icu');
     expect(url.pathname).toBe('/api/v1/athlete/0/activities');
     expect(url.searchParams.get('oldest')).toBe('2026-11-01T00:00:00');

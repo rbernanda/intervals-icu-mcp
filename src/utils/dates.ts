@@ -27,11 +27,12 @@ export function checkRange(range: DateRange): DateRange {
   dateSchema.parse(range.start_date);
   dateSchema.parse(range.end_date);
   const days = daysBetween(range.start_date, range.end_date) + 1;
-  if (days < 1 || days > MAX_RANGE_DAYS)
+  if (days < 1 || days > MAX_RANGE_DAYS) {
     throw new AppError(
       'invalid_input',
       'Date ranges must be ordered and cover at most 90 inclusive days.',
     );
+  }
   return range;
 }
 

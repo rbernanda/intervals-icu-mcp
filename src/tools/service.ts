@@ -53,16 +53,18 @@ export class TrainingService {
   ): Promise<{ rows: SourceActivity[]; saturated: boolean }> {
     const rows = await this.client.activities(range);
     const saturated = rows.length > MAX_ACTIVITIES;
-    if (requireComplete && saturated)
+    if (requireComplete && saturated) {
       throw new AppError(
         'response_too_large',
         'Activity range exceeds 1000 records. Use a shorter date range.',
       );
-    if (requireComplete && rows.some((a) => !a.type || !a.start_date_local))
+    }
+    if (requireComplete && rows.some((a) => !a.type || !a.start_date_local)) {
       throw new AppError(
         'invalid_response',
         'Incomplete activity stubs prevent a complete summary. Upstream may restrict Strava-sourced data.',
       );
+    }
     return {
       rows: rows.filter((a) => !a.start_date_local || inRange(a.start_date_local, range)),
       saturated,
@@ -93,14 +95,16 @@ export class TrainingService {
           b.id.localeCompare(a.id),
       );
     const warnings = [METRIC_NOTE];
-    if (saturated)
+    if (saturated) {
       warnings.push(
         'Upstream range saturated the 1000 activity cap; matching_count and filtering may be incomplete. Narrow the range.',
       );
-    if (rows.some((a) => !a.type || !a.start_date_local))
+    }
+    if (rows.some((a) => !a.type || !a.start_date_local)) {
       warnings.push(
         'Some upstream activities are incomplete stubs. Missing metrics remain null; sport filtering cannot match unknown types.',
       );
+    }
     return outputs.recent.parse({
       ...this.context(warnings),
       range,
@@ -119,17 +123,19 @@ export class TrainingService {
       activity.id !== input.activity_id ||
       !activity.icu_athlete_id ||
       activity.icu_athlete_id !== athlete.id
-    )
+    ) {
       throw new AppError(
         'upstream_forbidden',
         'Activity ownership could not be verified for the configured athlete.',
       );
+    }
     let intervals = null;
     let truncated = false;
     if (input.include_intervals) {
       const source = await this.client.intervals(input.activity_id);
-      if (source.id !== activity.id)
+      if (source.id !== activity.id) {
         throw new AppError('invalid_response', 'Intervals do not match the requested activity.');
+      }
       truncated = (source.icu_intervals?.length ?? 0) > 200;
       intervals = (source.icu_intervals ?? [])
         .slice(0, 200)
@@ -178,11 +184,12 @@ export class TrainingService {
       this.client.events(range),
       this.activityRange(range, true),
     ]);
-    if (events.length > MAX_EVENTS)
+    if (events.length > MAX_EVENTS) {
       throw new AppError(
         'response_too_large',
         'Calendar range exceeds 300 events. Use a shorter range.',
       );
+    }
     return outputs.calendar.parse({
       ...this.context([
         'Events and activities are separate source collections. Completed means an activity exists; pairing uses activity.paired_event_id only. Unpaired WORKOUT events remain planned regardless of date. Other categories remain calendar_event.',

@@ -6,6 +6,7 @@ import { normalizeActivity, normalizeFitness } from '../../src/intervals/normali
 import { aggregateSummary, sumRecorded } from '../../src/domain/summary';
 import { activitySchema } from '../../src/intervals/schemas';
 import { checkRange, todayInTimezone } from '../../src/utils/dates';
+import { requestUrl } from '../helpers';
 
 function service(requestFetch = fixtureFetch()) {
   return new TrainingService(
@@ -90,7 +91,7 @@ describe('all seven tools independently', () => {
     const paths: string[] = [];
     const sourceFetch = fixtureFetch();
     const s = service(async (url, init) => {
-      paths.push(String(url));
+      paths.push(requestUrl(url));
       return sourceFetch(url, init);
     });
     expect((await s.detail({ activity_id: 'a2' })).intervals).toBeNull();
@@ -103,7 +104,7 @@ describe('all seven tools independently', () => {
   it('rejects an activity from another athlete before accessing intervals', async () => {
     const base = fixtureFetch();
     const s = service(async (url, init) =>
-      String(url).includes('/activity/')
+      requestUrl(url).includes('/activity/')
         ? Response.json({ ...activities[0], icu_athlete_id: 'i999' })
         : base(url, init),
     );
@@ -160,7 +161,7 @@ describe('all seven tools independently', () => {
   it('detects saturated activity results and never returns incomplete summary totals', async () => {
     const base = fixtureFetch();
     const s = service(async (url, init) =>
-      String(url).includes('/activities')
+      requestUrl(url).includes('/activities')
         ? Response.json(Array.from({ length: 1001 }, (_, i) => ({ ...activities[0], id: `a${i}` })))
         : base(url, init),
     );
@@ -171,7 +172,7 @@ describe('all seven tools independently', () => {
   it('detects saturated event results', async () => {
     const base = fixtureFetch();
     const s = service(async (url, init) =>
-      String(url).includes('/events')
+      requestUrl(url).includes('/events')
         ? Response.json(Array.from({ length: 301 }, (_, id) => ({ ...events[0], id })))
         : base(url, init),
     );
@@ -180,7 +181,7 @@ describe('all seven tools independently', () => {
   it('does not silently aggregate restricted activity stubs', async () => {
     const base = fixtureFetch();
     const s = service(async (url, init) =>
-      String(url).includes('/activities') ? Response.json([{ id: 'hidden' }]) : base(url, init),
+      requestUrl(url).includes('/activities') ? Response.json([{ id: 'hidden' }]) : base(url, init),
     );
     await expect(s.summary({})).rejects.toMatchObject({ category: 'invalid_response' });
   });

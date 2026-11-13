@@ -31,8 +31,9 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
       kvNamespaces: ['OAUTH_KV'],
       bindings: { ...bindings, PUBLIC_ORIGIN: origin, OAUTH_ENABLE_DCR: String(enableDcr) },
       outboundService: async (req) => {
-        if (!req.url.startsWith('https://intervals.icu/'))
+        if (!req.url.startsWith('https://intervals.icu/')) {
           throw new Error('Unexpected outbound request');
+        }
         const response = await upstreamFetch(req.url);
         return new MiniflareResponse(await response.text(), {
           status: response.status,
@@ -50,7 +51,9 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
     await mf.setOptions(options(origin, Number(new URL(origin).port)));
     const { access_token } = await issueToken(env);
     const kv = await mf.getKVNamespace('OAUTH_KV');
-    for (const [key, row] of memory.rows) await kv.put(key, row.value, { metadata: row.metadata });
+    for (const [key, row] of memory.rows) {
+      await kv.put(key, row.value, { metadata: row.metadata });
+    }
     const unauthorized = await fetch(`${origin}/mcp`, { method: 'POST' });
     expect(unauthorized.status).toBe(401);
     const metadata = await fetch(`${origin}/.well-known/oauth-authorization-server`);

@@ -32,12 +32,15 @@ export function createProtectedMcp(
       authorizationServer.validateToken<AuthProps>(resource, token, env),
     handler: {
       async fetch(request, _env, ctx) {
-        if (!ctx.auth.scope.includes(READ_SCOPE)) return insufficientScope(ctx.auth, [READ_SCOPE]);
+        if (!ctx.auth.scope.includes(READ_SCOPE)) {
+          return insufficientScope(ctx.auth, [READ_SCOPE]);
+        }
         if (
           ctx.auth.userId !== config.ALLOWED_GITHUB_USER_ID ||
           ctx.props.userId !== config.ALLOWED_GITHUB_USER_ID
-        )
+        ) {
           return new Response('Forbidden', { status: 403 });
+        }
         const service = new TrainingService(
           new IntervalsClient({
             apiKey: config.INTERVALS_API_KEY,

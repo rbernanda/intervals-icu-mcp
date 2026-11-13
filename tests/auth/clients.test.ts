@@ -46,10 +46,10 @@ describe('MCP clients beyond ChatGPT', () => {
       context(),
     );
     expect(response.status).toBe(201);
-    const client = (await response.json()) as {
+    const client = await response.json<{
       client_id: string;
       token_endpoint_auth_method: string;
-    };
+    }>();
     expect(client.client_id).toBeTruthy();
     expect(client.token_endpoint_auth_method).toBe('none');
     expect((await worker.fetch(mcpRequest(env), env, context())).status).toBe(401);

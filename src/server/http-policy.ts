@@ -27,11 +27,13 @@ export function preflightResponse(request: Request, enableDcr: boolean): Respons
     request.method !== 'OPTIONS' ||
     !request.headers.has('origin') ||
     !paths.includes(new URL(request.url).pathname)
-  )
+  ) {
     return undefined;
+  }
   const method = request.headers.get('Access-Control-Request-Method');
-  if (!method || !['GET', 'POST'].includes(method))
+  if (!method || !['GET', 'POST'].includes(method)) {
     return new Response('Method not allowed', { status: 405 });
+  }
   return new Response(null, {
     status: 204,
     headers: {

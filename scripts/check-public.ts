@@ -11,14 +11,18 @@ const requiredFiles = [
   '.dev.vars.example',
   '.github/workflows/ci.yml',
 ];
-for (const path of requiredFiles) await stat(path);
+for (const path of requiredFiles) {
+  await stat(path);
+}
 const listed = execFileSync(
   'git',
   ['ls-files', '--cached', '--others', '--exclude-standard', '-z'],
   { encoding: 'utf8', maxBuffer: 10_000_000 },
 );
 const paths = [...new Set(listed.split('\0').filter(Boolean))];
-if (paths.length === 0) throw new Error('No publishable repository files found.');
+if (paths.length === 0) {
+  throw new Error('No publishable repository files found.');
+}
 const problems: string[] = [];
 for (const path of paths) {
   const info = await stat(path);

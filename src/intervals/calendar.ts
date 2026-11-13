@@ -59,14 +59,20 @@ export function buildTrainingCalendar(
   const entries = activities.map((activity) => {
     const event =
       activity.paired_event_id == null ? undefined : eventsById.get(activity.paired_event_id);
-    if (event) pairedIds.add(event.id);
+    if (event) {
+      pairedIds.add(event.id);
+    }
     return completedEntry(activity, event);
   });
 
   for (const event of events) {
-    if (pairedIds.has(event.id)) continue;
+    if (pairedIds.has(event.id)) {
+      continue;
+    }
     const date = requiredLocalDate(event.start_date_local);
-    if (inRange(date, range)) entries.push(plannedEntry(event));
+    if (inRange(date, range)) {
+      entries.push(plannedEntry(event));
+    }
   }
 
   return entries.sort((left, right) => left.date.localeCompare(right.date));

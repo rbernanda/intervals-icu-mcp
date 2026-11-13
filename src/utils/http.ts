@@ -9,14 +9,18 @@ export async function readBoundedBytes(
     await response.body?.cancel();
     throw new AppError('response_too_large', 'Response exceeds the supported size.');
   }
-  if (!response.body) throw new AppError('invalid_response', 'Empty response body.');
+  if (!response.body) {
+    throw new AppError('invalid_response', 'Empty response body.');
+  }
   const reader = response.body.getReader();
   const chunks: Uint8Array[] = [];
   let length = 0;
   try {
     while (true) {
       const chunk = await reader.read();
-      if (chunk.done) break;
+      if (chunk.done) {
+        break;
+      }
       length += chunk.value.byteLength;
       if (length > maxBytes) {
         await reader.cancel();

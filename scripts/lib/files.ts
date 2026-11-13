@@ -4,7 +4,9 @@ export async function assertNewFile(path: string): Promise<void> {
   try {
     await access(path);
   } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return;
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+      return;
+    }
     throw error;
   }
   throw new Error(
@@ -18,8 +20,9 @@ export async function writePrivateFile(path: string, contents: string): Promise<
 }
 
 export function dotenvContents(values: Record<string, string>): string {
-  if (Object.values(values).some((value) => /[\r\n\0]/.test(value)))
+  if (Object.values(values).some((value) => /[\r\n\0]/.test(value))) {
     throw new Error('Configuration values must fit on one line.');
+  }
   return (
     Object.entries(values)
       .map(([key, value]) => `${key}=${JSON.stringify(value)}`)

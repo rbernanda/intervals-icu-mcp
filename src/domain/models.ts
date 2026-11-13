@@ -10,7 +10,9 @@ export function isRunning(type: string | null | undefined): boolean {
 }
 
 export function matchesSport(type: string | null | undefined, filter?: string): boolean {
-  if (!filter) return true;
+  if (!filter) {
+    return true;
+  }
   return filter.toLowerCase() === 'run' || filter.toLowerCase() === 'running'
     ? isRunning(type)
     : type?.toLowerCase() === filter.toLowerCase();

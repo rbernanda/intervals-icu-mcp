@@ -4,7 +4,7 @@ import { createAuthorizationServer } from '../../src/auth/provider';
 import { escapeHtml } from '../../src/auth/consent';
 import { verifyGithubUser } from '../../src/auth/github';
 import { parseConfig } from '../../src/config/env';
-import { context, issueToken, mcpRequest, memoryKv, testEnv } from '../helpers';
+import { context, issueToken, mcpRequest, memoryKv, requestUrl, testEnv } from '../helpers';
 import { fixtureFetch } from '../fixtures/data';
 
 describe('OAuth access control', () => {
@@ -258,13 +258,15 @@ describe('OAuth access control', () => {
       context(),
     );
     expect(refreshed.status).toBe(200);
-    const next = (await refreshed.json()) as { access_token: string };
+    const next = await refreshed.json<{ access_token: string }>();
     expect((await worker.fetch(mcpRequest(env, next.access_token), env, context())).status).toBe(
       200,
     );
     const oauth = createAuthorizationServer(parseConfig(env), () => {}).getOAuthApi(env);
     const grants = await oauth.listUserGrants(env.ALLOWED_GITHUB_USER_ID);
-    for (const grant of grants.items) await oauth.revokeGrant(grant.id, env.ALLOWED_GITHUB_USER_ID);
+    for (const grant of grants.items) {
+      await oauth.revokeGrant(grant.id, env.ALLOWED_GITHUB_USER_ID);
+    }
     expect((await worker.fetch(mcpRequest(env, next.access_token), env, context())).status).toBe(
       401,
     );
@@ -275,10 +277,13 @@ describe('OAuth access control', () => {
       const env = testEnv();
       const issued = await issueToken(env);
       const upstream = vi.fn<typeof fetch>(async (input) => {
-        const url = String(input);
-        if (url === 'https://github.com/login/oauth/access_token')
+        const url = requestUrl(input);
+        if (url === 'https://github.com/login/oauth/access_token') {
           return Response.json({ access_token: 'DISCARD-GITHUB-TOKEN', token_type: 'bearer' });
-        if (url === 'https://api.github.com/user') return Response.json({ id: githubId });
+        }
+        if (url === 'https://api.github.com/user') {
+          return Response.json({ id: githubId });
+        }
         throw new Error('Unexpected test request');
       });
       const worker = createWorker(upstream, () => {});
@@ -334,7 +339,7 @@ describe('OAuth access control', () => {
         context(),
       );
       expect(exchanged.status).toBe(200);
-      const token = (await exchanged.json()) as { access_token: string };
+      const token = await exchanged.json<{ access_token: string }>();
       expect((await worker.fetch(mcpRequest(env, token.access_token), env, context())).status).toBe(
         200,
       );
@@ -389,7 +394,7 @@ describe('OAuth access control', () => {
         context(),
       );
       expect(result.status).toBe(200);
-      const token = (await result.json()) as { access_token: string };
+      const token = await result.json<{ access_token: string }>();
       expect(
         await server.validateToken(`${env.PUBLIC_ORIGIN}/mcp`, token.access_token, env),
       ).toMatchObject({ audience: `${env.PUBLIC_ORIGIN}/mcp`, scope: ['intervals:read'] });
@@ -418,7 +423,14 @@ describe('single-user GitHub identity', () => {
     expect(await verifyGithubUser(parseConfig(env), 'code', 'v'.repeat(64), requestFetch)).toBe(
       '12345',
     );
-    expect(String(requestFetch.mock.calls[0]?.[1]?.body)).toContain('code_verifier=');
+    const tokenRequestBody = requestFetch.mock.calls[0]?.[1]?.body;
+    expect(tokenRequestBody).toBeInstanceOf(URLSearchParams);
+
+    if (!(tokenRequestBody instanceof URLSearchParams)) {
+      throw new Error('Expected a form-encoded token request');
+    }
+
+    expect(tokenRequestBody.get('code_verifier')).toBe('v'.repeat(64));
     expect(requestFetch.mock.calls[1]?.[1]?.headers).toMatchObject({
       Authorization: 'Bearer github-private-token',
     });

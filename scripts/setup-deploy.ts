@@ -10,7 +10,9 @@ const parsed = ts.parseConfigFileTextToJson(
   'wrangler.jsonc',
   await readFile('wrangler.jsonc', 'utf8'),
 );
-if (parsed.error) throw new Error('Could not parse the base Wrangler configuration.');
+if (parsed.error) {
+  throw new Error('Could not parse the base Wrangler configuration.');
+}
 const template = z.record(z.string(), z.unknown()).parse(parsed.config as unknown);
 const terminal = createHiddenTerminal();
 try {
@@ -30,8 +32,9 @@ try {
     allowed_origins: await terminal.ask('Additional browser origins, comma-separated (optional)'),
     enable_dcr: await terminal.ask('Enable legacy client registration? true or false', 'false'),
   };
-  if (!['true', 'false'].includes(settings.enable_dcr))
+  if (!['true', 'false'].includes(settings.enable_dcr)) {
     throw new Error('Enter true or false for client registration.');
+  }
   const config = prepareDeployment(
     { ...settings, enable_dcr: settings.enable_dcr === 'true' },
     template,

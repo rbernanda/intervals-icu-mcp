@@ -1,3 +1,5 @@
+import { requestUrl } from '../helpers';
+
 export const athlete = {
   id: 'i123',
   name: 'Test Runner',
@@ -109,13 +111,25 @@ export const intervals = {
 
 export function fixtureFetch(): typeof fetch {
   return async (input) => {
-    const url = new URL(String(input));
-    if (url.pathname.endsWith('/activities')) return Response.json(activities);
-    if (url.pathname.endsWith('/wellness')) return Response.json(wellness);
-    if (url.pathname.endsWith('/events')) return Response.json(events);
-    if (url.pathname.endsWith('/intervals')) return Response.json(intervals);
-    if (url.pathname.startsWith('/api/v1/activity/')) return Response.json(activities[0]);
-    if (url.pathname === '/api/v1/athlete/0') return Response.json(athlete);
+    const url = new URL(requestUrl(input));
+    if (url.pathname.endsWith('/activities')) {
+      return Response.json(activities);
+    }
+    if (url.pathname.endsWith('/wellness')) {
+      return Response.json(wellness);
+    }
+    if (url.pathname.endsWith('/events')) {
+      return Response.json(events);
+    }
+    if (url.pathname.endsWith('/intervals')) {
+      return Response.json(intervals);
+    }
+    if (url.pathname.startsWith('/api/v1/activity/')) {
+      return Response.json(activities[0]);
+    }
+    if (url.pathname === '/api/v1/athlete/0') {
+      return Response.json(athlete);
+    }
     throw new Error('Unexpected fixture request');
   };
 }

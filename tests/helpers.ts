@@ -3,14 +3,21 @@ import { createAuthorizationServer, READ_SCOPE } from '../src/auth/provider';
 import { parseConfig } from '../src/config/env';
 import { pkceChallenge } from '../src/auth/github';
 
+export function requestUrl(input: Parameters<typeof fetch>[0]): string {
+  return input instanceof Request ? input.url : input.toString();
+}
+
 export function memoryKv() {
   const rows = new Map<string, { value: string; expiration?: number; metadata?: unknown }>();
   const kv = {
     get: vi.fn(async (key: string | string[], options?: { type?: string } | string) => {
-      if (Array.isArray(key)) return new Map(key.map((k) => [k, rows.get(k)?.value ?? null]));
+      if (Array.isArray(key)) {
+        return new Map(key.map((k) => [k, rows.get(k)?.value ?? null]));
+      }
       const row = rows.get(key);
-      if (!row || (row.expiration !== undefined && row.expiration <= Date.now() / 1000))
+      if (!row || (row.expiration !== undefined && row.expiration <= Date.now() / 1000)) {
         return null;
+      }
       return (typeof options === 'string' ? options : options?.type) === 'json'
         ? (JSON.parse(row.value) as unknown)
         : row.value;
@@ -73,7 +80,7 @@ export function context(): ExecutionContext {
     tracing: {} as Tracing,
     mapVirtualHost: vi.fn(),
     abort: vi.fn(),
-  } as ExecutionContext;
+  };
 }
 
 export async function issueToken(env: Env, options: { scopes?: string[]; userId?: string } = {}) {
@@ -122,13 +129,14 @@ export async function issueToken(env: Env, options: { scopes?: string[]; userId?
     env,
     context(),
   );
-  const result = (await response.json()) as {
+  const result = await response.json<{
     access_token: string;
     refresh_token: string;
     error?: string;
-  };
-  if (response.status !== 200 || !result.access_token)
+  }>();
+  if (response.status !== 200 || !result.access_token) {
     throw new Error(`Fixture token exchange failed: ${result.error ?? response.status}`);
+  }
   return { ...result, authorizationServer: as, clientId: client.clientId, authUrl };
 }
 
