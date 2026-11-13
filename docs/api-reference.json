@@ -1,0 +1,467 @@
+{
+  "source": "https://intervals.icu/api/v1/docs",
+  "retrieved": "2026-11-13",
+  "sha256": "18b72dd1a2cf8984203c6d1770b0981ad329eee932fa656a1177b54cf2de6be8",
+  "openapi": "3.0.1",
+  "paths": {
+    "/api/v1/athlete/{id}": {
+      "get": {
+        "tags": ["Athletes"],
+        "summary": "Get the athlete with sportSettings and custom_items",
+        "operationId": "getAthlete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithSportSettings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/athlete/{id}/activities": {
+      "get": {
+        "tags": ["Activities"],
+        "summary": "List activities for a date range in desc date order",
+        "description": "An empty stub object is returned for Strava activities",
+        "operationId": "listActivities",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "oldest",
+            "in": "query",
+            "description": "Local ISO-8601 date or date and time e.g. 2019-07-22T16:18:49 or 2019-07-22",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newest",
+            "in": "query",
+            "description": "Local ISO-8601 date or date and time, defaults to now",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "route_id",
+            "in": "query",
+            "description": "Only return activities on this route",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Return at most this many activities",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "Comma separated list of field names to include in the returned objects (default is all), also excludes null values. Use dot separated names to select fields from nested objects and the objects in arrays",
+            "required": false,
+            "schema": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Activity"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/activity/{id}": {
+      "get": {
+        "tags": ["Activities"],
+        "summary": "Get an activity",
+        "description": "An empty stub object is returned for Strava activities",
+        "operationId": "getActivity",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "intervals",
+            "in": "query",
+            "description": "Include interval data",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Activity"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ActivityWithIntervals"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Hidden"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/activity/{id}/intervals": {
+      "get": {
+        "tags": ["Activities"],
+        "summary": "Get activity intervals",
+        "operationId": "getIntervals",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "Comma separated list of field names to include in the returned object (default is all), also excludes null values. Use dot separated names to select fields from the objects in the arrays e.g. icu_intervals.average_watts",
+            "required": false,
+            "schema": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntervalsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/athlete/{id}/wellness{ext}": {
+      "get": {
+        "tags": ["Wellness"],
+        "summary": "List wellness records for date range (use .csv for CSV format)",
+        "operationId": "listWellnessRecords",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ext",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "oldest",
+            "in": "query",
+            "description": "Local date of oldest record (ISO-8601)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newest",
+            "in": "query",
+            "description": "Local date of newest record (ISO-8601), inclusive",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cols",
+            "in": "query",
+            "description": "Comma separated list of column names to include in CSV (default is all)",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "Comma separated list of field names to include in the returned objects (default is all), also excludes null values",
+            "required": false,
+            "schema": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Wellness"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/athlete/{id}/events{format}": {
+      "get": {
+        "tags": ["Events"],
+        "summary": "List events (planned workouts, notes etc.) on the athlete's calendar, add .csv for CSV output",
+        "operationId": "listEvents",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "oldest",
+            "in": "query",
+            "description": "Local date (ISO-8601) for oldest event to return, default is today in the athletes timezone",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newest",
+            "in": "query",
+            "description": "Local date (ISO-8601) for newest event to return (inclusive), default is oldest plus 6 days",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Comma separated list of categories to filter for (e.g. WORKOUT,NOTES)",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max number of events to return (default is all events)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "calendar_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ext",
+            "in": "query",
+            "description": "Convert workouts to this format (zwo, mrc, erg or fit) and add workout_filename and workout_file_base64 to workout object",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "powerRange",
+            "in": "query",
+            "description": "Percentage used to convert fixed power targets into a range for outdoor workouts only (default is 2.5 or whatever is configured in the Garmin box in /settings)",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "hrRange",
+            "in": "query",
+            "description": "Percentage used to convert fixed HR targets into a range (default is 1.5 or whatever is configured in the Garmin box in /settings)",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "paceRange",
+            "in": "query",
+            "description": "Percentage used to convert fixed pace targets into a range (default is 2.5 or whatever is configured in the Garmin box in /settings)",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Locale (en, es, de etc.) to use for workouts with steps in multiple languages",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resolve",
+            "in": "query",
+            "description": "Resolve power, heart rate and pace targets to watts, bpm and m/s respectively",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "Comma separated list of field names to include in the returned objects (default is all), also excludes null values. Use dot separated names to select fields from nested objects and the objects in arrays. Ignored for CSV output",
+            "required": false,
+            "schema": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Event"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "securitySchemes": {
+    "APIKey": {
+      "type": "http",
+      "description": "Username is API_KEY, Password is your API key found in /settings",
+      "scheme": "basic"
+    },
+    "AccessToken": {
+      "type": "http",
+      "description": "Use bearer token for an athlete from OAuth flow",
+      "scheme": "bearer"
+    }
+  }
+}

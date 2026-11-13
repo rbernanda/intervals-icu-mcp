@@ -1,0 +1,61 @@
+{
+  "name": "intervals-icu-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": "^22.14.0 || ^24.0.0"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "types": "wrangler types --strict-vars=false",
+    "smoke": "tsx scripts/smoke-test.ts",
+    "inspector": "mcp-inspector",
+    "setup:local": "tsx scripts/setup-local.ts",
+    "verify:runtime": "pnpm build && vitest run --config vitest.runtime.config.ts",
+    "types:check": "wrangler types --strict-vars=false --check",
+    "setup:deploy": "tsx scripts/setup-deploy.ts",
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm check:public",
+    "check:public": "tsx scripts/check-public.ts",
+    "build:instance": "wrangler deploy --config wrangler.instance.jsonc --dry-run --outdir dist",
+    "deploy:instance": "wrangler deploy --config wrangler.instance.jsonc",
+    "types:portable": "tsc --project tsconfig.portable.json"
+  },
+  "dependencies": {
+    "@cloudflare/workers-oauth-provider": "1.2.4",
+    "@modelcontextprotocol/server": "2.4.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261113.1",
+    "@eslint/js": "^10.0.1",
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/inspector": "2.15.0",
+    "@types/node": "^22.19.0",
+    "eslint": "^10.14.0",
+    "miniflare": "5.20261110.2-beta",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^4.1.0",
+    "wrangler": "4.161.0"
+  },
+  "description": "Read-only Intervals.icu remote MCP server: one self-hosted Cloudflare Worker per owner.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rbernanda/intervals-icu-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rbernanda/intervals-icu-mcp/issues"
+  },
+  "homepage": "https://github.com/rbernanda/intervals-icu-mcp#readme"
+}

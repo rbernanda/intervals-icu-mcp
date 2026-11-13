@@ -1,0 +1,15 @@
+# One self-hosted instance per owner. Enter values locally; do not commit this file after filling it.
+# Prefer pnpm setup:local, which creates a private .dev.vars file without echoing values.
+INTERVALS_API_KEY="replace-locally"
+INTERVALS_ATHLETE_ID="0"
+PUBLIC_ORIGIN="http://localhost:8787"
+GITHUB_CLIENT_ID="replace-locally"
+GITHUB_CLIENT_SECRET="replace-locally"
+# Immutable numeric ID of THIS instance's owner, not a GitHub username.
+ALLOWED_GITHUB_USER_ID="replace-locally"
+# Replace with the athlete's actual IANA timezone. UTC here is an example only.
+ATHLETE_TIMEZONE="Etc/UTC"
+# Exact additional browser origins; no wildcards. Server-to-server clients may omit Origin.
+MCP_ALLOWED_ORIGINS=""
+# Opt in only for clients without CIMD support. Registration alone never grants data access.
+OAUTH_ENABLE_DCR="false"

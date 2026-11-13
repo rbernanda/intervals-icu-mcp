@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "types": [], "lib": ["ES2022", "DOM", "DOM.Iterable"] },
+  "include": ["src/domain/**/*.ts", "src/intervals/**/*.ts", "src/utils/**/*.ts"],
+  "exclude": ["worker-configuration.d.ts"]
+}

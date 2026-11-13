@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "intervals-icu-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-13",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "invocation_logs": false,
+    },
+  },
+  "kv_namespaces": [
+    {
+      "binding": "OAUTH_KV",
+    },
+  ],
+  "vars": {
+    "UPSTREAM_TIMEOUT_MS": "10000",
+    "MCP_ALLOWED_ORIGINS": "",
+    "OAUTH_ENABLE_DCR": "false",
+  },
+  "secrets": {
+    "required": [
+      "INTERVALS_API_KEY",
+      "INTERVALS_ATHLETE_ID",
+      "PUBLIC_ORIGIN",
+      "GITHUB_CLIENT_ID",
+      "GITHUB_CLIENT_SECRET",
+      "ALLOWED_GITHUB_USER_ID",
+      "ATHLETE_TIMEZONE",
+    ],
+  },
+}
