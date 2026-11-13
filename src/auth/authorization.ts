@@ -11,7 +11,13 @@ import { githubAuthorizeUrl, verifyGithubUser } from './github';
 import { renderConsentPage } from './consent';
 import { READ_SCOPE, type AuthProps } from './provider';
 
+/** The verifier stays in encrypted state until token exchange; the authorization redirect carries only its challenge. */
 const upstreamDataSchema = z.object({ verifier: z.string().min(43).max(128) });
+
+/**
+ * Continues only requests recovered through the provider’s consent/state helpers.
+ * A GitHub code alone cannot authorize a client; callback state, browser binding and owner identity must pass.
+ */
 export async function handleAuthorization(
   request: Request,
   config: Config,

@@ -4,22 +4,22 @@ Validated locally during 2026-11-13–14, macOS, Node.js 22.23.4, pnpm 10.34.9. 
 
 ## Open-source and self-hosting update
 
-| Check                          | Observed result                                                                                                                                                  |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Locked dependency installation | Passed, including frozen-lockfile offline installation                                                                                                           |
-| `pnpm types:check`             | Passed; generated Worker bindings match the reusable configuration                                                                                               |
-| `pnpm check`                   | Passed: strict TypeScript, ESLint/Prettier, 97 tests across 8 files, publication checks                                                                          |
-| `pnpm types:portable`          | Passed; portable models/aggregation and upstream adapter compile without Workers declarations or Node ambient types                                              |
-| `pnpm build`                   | Passed: Wrangler deployment dry run; approximately 1.52 MiB uncompressed / 279 KiB gzip                                                                          |
-| `pnpm verify:runtime`          | Passed: 2 runtime tests covering the production bundle and generated owner-specific deployment configuration                                                     |
-| MCP Inspector                  | Passed strict discovery and authenticated calls in both modern and legacy protocol modes against workerd                                                         |
-| Smoke script                   | Passed against workerd with provider-issued fixture tokens and mocked Intervals responses                                                                        |
-| Optional DCR                   | Passed unit and native runtime registration checks; disabled by default; anonymous MCP access stays rejected                                                     |
-| Owner isolation                | Passed: another owner's token is rejected; authorized requests use only the configured owner's upstream key                                                      |
-| Setup helpers                  | Passed: non-secret instance configuration, invalid-settings rejection, private file mode, no overwrites and no accidental upstream credentials in generated vars |
-| `pnpm check:public`            | Passed; required community files present, private state/config ignored, no detected local home paths or representative credential patterns                       |
-| `pnpm audit --prod`            | No known vulnerabilities found                                                                                                                                   |
-| GitHub Actions workflow        | Added and YAML formatting checked locally; immutable official action pins, read-only permissions, Node 22/24 matrix, no application secrets or deployment        |
+| Check                          | Observed result                                                                                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Locked dependency installation | Passed, including frozen-lockfile offline installation                                                                                                                                      |
+| `pnpm types:check`             | Passed; generated Worker bindings match the reusable configuration                                                                                                                          |
+| `pnpm check`                   | Passed: strict TypeScript, ESLint/Prettier, 97 tests across 8 files, publication checks                                                                                                     |
+| `pnpm types:portable`          | Passed; portable models/aggregation and upstream adapter compile without Workers declarations or Node ambient types                                                                         |
+| `pnpm build`                   | Passed: Wrangler deployment dry run; approximately 1.52 MiB uncompressed / 279 KiB gzip                                                                                                     |
+| `pnpm verify:runtime`          | Passed: 2 runtime tests covering the production bundle and generated owner-specific deployment configuration                                                                                |
+| MCP Inspector                  | Passed strict discovery and authenticated calls in both modern and legacy protocol modes against workerd                                                                                    |
+| Smoke script                   | Passed against workerd with provider-issued fixture tokens and mocked Intervals responses                                                                                                   |
+| Optional DCR                   | Passed unit and native runtime registration checks; disabled by default; anonymous MCP access stays rejected                                                                                |
+| Owner isolation                | Passed: another owner's token is rejected; authorized requests use only the configured owner's upstream key                                                                                 |
+| Setup helpers                  | Passed: non-secret instance configuration, invalid-settings rejection, private file mode, no overwrites and no accidental upstream credentials in generated vars                            |
+| `pnpm check:public`            | Passed; required community files present, private state/config ignored, no detected local home paths or representative credential patterns                                                  |
+| `pnpm audit --prod`            | No known vulnerabilities found                                                                                                                                                              |
+| GitHub Actions workflow        | Passed on Linux Node 22 and 24 for the initial publication; [hosted CI run](https://github.com/rbernanda/intervals-icu-mcp/actions/runs/43473253802). Latest runs are available in Actions. |
 
 The runtime tests start the actual bundled Worker in workerd/Miniflare with isolated KV and mocked upstream responses. The official Inspector CLI runs against a loopback HTTP listener in both protocol eras. It uses real OAuth-provider token encryption/validation, verifies unauthenticated access rejection and CIMD/S256 metadata, optionally registers a DCR client, and executes the smoke script. Temporary token files have private permissions and are removed afterward.
 
@@ -31,13 +31,14 @@ API/domain tests cover documented Basic auth, exact paths/query serialization, r
 
 The base local development command was also started successfully and stopped after checking that unconfigured `/mcp` safely returns 503 with privacy headers. No `.dev.vars` containing live secrets was created.
 
+The complete `pnpm audit` (including development dependencies) also reports no known vulnerabilities after the documented minimatch override. Function-spacing rules were checked with deliberately adjacent declarations, assigned functions and class methods: ESLint rejected them and its autofix inserted the required blank lines.
+
 ## Verification boundaries
 
 The Node tests use a Workers base-class shim and a KV test double; native fetch/crypto/KV/metadata/MCP serving are independently checked in workerd. The automated Inspector fixture uses a test-only registered client. Separate tests exercise CIMD resolution and optional DCR. Those checks are not a live account authorization or client installation.
 
 The following remain **unverified**:
 
-- GitHub-hosted CI execution, including its Linux Node 22/24 matrix; this requires an authorized repository push. Local checks ran on macOS Node 22.
 - Real Intervals API connectivity, payloads and synchronization freshness with an owner's credentials.
 - Real GitHub browser authorization/callback setup for an owner's OAuth app.
 - Production deployment, actual public URL, remote metadata and authenticated requests.
@@ -48,3 +49,5 @@ Production deployment remains a separate owner action. Maintainers should enable
 ## Code review before publication
 
 The review separated tool contracts from service orchestration, extracted calendar normalization and pairing, and split HTTP security policy, OAuth provider configuration, browser authorization and consent rendering into focused modules. Calendar assembly uses explicit date guards rather than non-null assertions; undated source events fail instead of disappearing from the result. Regression tests cover those cases and forbid implicit pairing by name/date. The README keeps the core workflow concise and uses Mermaid for architecture, with detailed operations in linked guides.
+
+Function spacing is enforced through maintained ESLint Stylistic rules, with blank lines around declarations and assigned functions and between class methods. Targeted JSDoc explains date arithmetic, incomplete totals, source conversions, OAuth trust boundaries and upstream retry/deadline behavior.

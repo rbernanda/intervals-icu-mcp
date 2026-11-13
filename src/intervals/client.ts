@@ -12,23 +12,32 @@ import {
   wellnessSchema,
 } from './schemas';
 
+/** One extra source record is requested to detect truncation; no cursor pagination is documented. */
 export const MAX_ACTIVITIES = 1000;
+
 export const MAX_EVENTS = 300;
+
 const MAX_RESPONSE_BYTES = 2_000_000;
 const MAX_RETRIES = 2;
 const MAX_RETRY_WAIT_MS = 2000;
+
+/** Shared across sequential upstream calls when an MCP request supplies deadlineAtMs. */
 export const UPSTREAM_BUDGET_MS = 25000;
+
 const API_ORIGIN = 'https://intervals.icu';
+
 export interface ClientOptions {
   apiKey: string;
   athleteId: string;
   timeoutMs?: number;
+  /** Absolute deadline shared by one tool call; omitted deadlines reset for each reusable-client request. */
   deadlineAtMs?: number;
   fetch?: typeof fetch;
   sleep?: (ms: number) => Promise<void>;
   logger?: Logger;
   now?: () => number;
 }
+
 const ACTIVITY_FIELDS = Object.keys(activitySchema.shape).join(',');
 const WELLNESS_FIELDS = Object.keys(wellnessSchema.shape).join(',');
 const EVENT_FIELDS = Object.keys(eventSchema.shape).join(',');
@@ -37,12 +46,14 @@ const INTERVAL_FIELDS = [
   ...Object.keys(intervalSchema.shape).map((field) => `icu_intervals.${field}`),
 ].join(',');
 
+/** Parses either Retry-After seconds or an HTTP date; malformed headers use the bounded backoff policy. */
 export function retryAfterMs(value: string | null, now: number): number | undefined {
   if (!value) return undefined;
   if (/^\d+(\.\d+)?$/.test(value.trim())) return Math.ceil(Number(value) * 1000);
   const parsed = Date.parse(value);
   return Number.isFinite(parsed) ? Math.max(0, parsed - now) : undefined;
 }
+
 function statusError(status: number, retryAfter?: number): AppError {
   const args: Record<number, [ErrorCategory, string]> = {
     401: ['upstream_unauthorized', 'Intervals.icu rejected the API credentials.'],
@@ -69,6 +80,7 @@ export class IntervalsClient {
   private readonly logger: Logger;
   private readonly now: () => number;
   private readonly timeoutMs: number;
+
   constructor(private readonly options: ClientOptions) {
     if (!options.apiKey || !/^(0|i?[1-9]\d*)$/.test(options.athleteId))
       throw new AppError('configuration', 'Invalid Intervals client configuration.');
@@ -80,9 +92,15 @@ export class IntervalsClient {
     if (!Number.isInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 20000)
       throw new AppError('configuration', 'Invalid upstream timeout.');
   }
+
   private athletePath(suffix = ''): string {
     return `/api/v1/athlete/${encodeURIComponent(this.options.athleteId)}${suffix}`;
   }
+
+  /**
+   * Reads and validates one bounded response with a deadline covering headers and body.
+   * Only transient failures retry; redirects are never followed with upstream credentials.
+   */
   async get<T>(
     path: string,
     schema: z.ZodType<T>,
@@ -165,9 +183,11 @@ export class IntervalsClient {
       throw safe;
     }
   }
+
   profile() {
     return this.get(this.athletePath(), athleteSchema);
   }
+
   activities(range: DateRange) {
     checkRange(range);
     // No cursor/offset is documented: bounded range + sentinel detects saturation; never invent pagination.
@@ -182,18 +202,21 @@ export class IntervalsClient {
       },
     );
   }
+
   activity(id: string) {
     activityIdSchema.parse(id);
     return this.get(`/api/v1/activity/${encodeURIComponent(id)}`, activitySchema, {
       intervals: false,
     });
   }
+
   intervals(id: string) {
     activityIdSchema.parse(id);
     return this.get(`/api/v1/activity/${encodeURIComponent(id)}/intervals`, intervalsSchema, {
       fields: INTERVAL_FIELDS,
     });
   }
+
   wellness(range: DateRange) {
     checkRange(range);
     return this.get(this.athletePath('/wellness'), z.array(wellnessSchema).max(90), {
@@ -202,6 +225,7 @@ export class IntervalsClient {
       fields: WELLNESS_FIELDS,
     });
   }
+
   events(range: DateRange) {
     checkRange(range);
     return this.get(this.athletePath('/events'), z.array(eventSchema).max(MAX_EVENTS + 1), {

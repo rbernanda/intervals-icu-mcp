@@ -12,6 +12,7 @@ export const timezoneSchema = z
       return false;
     }
   });
+
 export const publicOriginSchema = z
   .string()
   .url()
@@ -30,6 +31,7 @@ export const publicOriginSchema = z
       return false;
     }
   });
+
 const allowedOriginsSchema = z
   .string()
   .default('')
@@ -59,7 +61,9 @@ const schema = z.object({
   ATHLETE_TIMEZONE: timezoneSchema,
   UPSTREAM_TIMEOUT_MS: z.coerce.number().int().min(100).max(20000).default(10000),
 });
+
 export type Config = z.infer<typeof schema>;
+
 export function parseConfig(env: unknown): Config {
   const result = schema.safeParse(env);
   if (

@@ -6,12 +6,14 @@ import { normalizeActivity, normalizeFitness } from '../../src/intervals/normali
 import { aggregateSummary, sumRecorded } from '../../src/domain/summary';
 import { activitySchema } from '../../src/intervals/schemas';
 import { checkRange, todayInTimezone } from '../../src/utils/dates';
+
 function service(requestFetch = fixtureFetch()) {
   return new TrainingService(
     new IntervalsClient({ apiKey: 'test', athleteId: '0', fetch: requestFetch, logger: () => {} }),
     { timezone: 'Asia/Jakarta', now: () => new Date('2026-11-13T01:00:00Z') },
   );
 }
+
 const range = { start_date: '2026-11-01', end_date: '2026-11-15' };
 describe('normalization and aggregation', () => {
   it('preserves source meters and seconds, converts speed to pace and rpm to running spm', () => {

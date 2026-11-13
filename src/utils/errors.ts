@@ -38,5 +38,7 @@ export interface LogEntry {
   upstream_status?: number;
   http_status?: number;
 }
+
 export type Logger = (entry: LogEntry) => void;
+
 export const log: Logger = (entry) => console.log(JSON.stringify(entry));

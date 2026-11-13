@@ -2,19 +2,24 @@ import { z } from 'zod';
 
 const nullableNumber = z.number().finite().nullable();
 const nullableString = z.string().nullable();
+
 export const RUN_TYPES = ['Run', 'TrailRun', 'VirtualRun'];
+
 export function isRunning(type: string | null | undefined): boolean {
   return RUN_TYPES.includes(type ?? '');
 }
+
 export function matchesSport(type: string | null | undefined, filter?: string): boolean {
   if (!filter) return true;
   return filter.toLowerCase() === 'run' || filter.toLowerCase() === 'running'
     ? isRunning(type)
     : type?.toLowerCase() === filter.toLowerCase();
 }
+
 export function paceSecondsPerKm(speed: number | null | undefined): number | null {
   return speed != null && speed > 0 ? 1000 / speed : null;
 }
+
 export const activityOutputSchema = z.object({
   id: z.string(),
   name: nullableString,
@@ -36,7 +41,9 @@ export const activityOutputSchema = z.object({
   elevation_gain_m: nullableNumber,
   training_load: nullableNumber,
 });
+
 export type Activity = z.infer<typeof activityOutputSchema>;
+
 export const profileOutputSchema = z.object({
   id: z.string(),
   display_name: nullableString,
@@ -54,12 +61,14 @@ export const profileOutputSchema = z.object({
     }),
   ),
 });
+
 export const formSchema = z.object({
   value: nullableNumber,
   origin: z.literal('computed'),
   formula: z.literal('same-day ctl - atl'),
   unit: z.literal('source training-load units'),
 });
+
 export const fitnessOutputSchema = z.object({
   date: z.string(),
   fitness_ctl: nullableNumber,
@@ -74,7 +83,9 @@ export const fitnessOutputSchema = z.object({
     rampRate: nullableNumber,
   }),
 });
+
 export type Fitness = z.infer<typeof fitnessOutputSchema>;
+
 export const wellnessOutputSchema = z.object({
   date: z.string(),
   updated: nullableString,
@@ -94,6 +105,7 @@ export const wellnessOutputSchema = z.object({
   spo2_percent: nullableNumber,
   steps: nullableNumber,
 });
+
 export const intervalOutputSchema = z.object({
   id: nullableNumber,
   type: nullableString,
@@ -130,4 +142,5 @@ export const calendarEntrySchema = z.object({
   actual_distance_m: z.number().nullable(),
   actual_training_load: z.number().nullable(),
 });
+
 export type CalendarEntry = z.infer<typeof calendarEntrySchema>;

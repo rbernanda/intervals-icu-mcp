@@ -8,7 +8,9 @@ const localTimestamp = z
   .regex(/^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?$/)
   .refine((value) => dateSchema.safeParse(value.slice(0, 10)).success)
   .nullish();
+
 export const activityIdSchema = z.string().regex(/^[A-Za-z0-9_-]{1,80}$/);
+
 export const athleteSchema = z.object({
   id: z.string().min(1),
   name: optionalText,
@@ -29,6 +31,7 @@ export const athleteSchema = z.object({
     .max(100)
     .nullish(),
 });
+
 export const activitySchema = z.object({
   id: activityIdSchema,
   icu_athlete_id: z.string().nullish(),
@@ -52,6 +55,7 @@ export const activitySchema = z.object({
   icu_ctl: optionalNumber,
   icu_atl: optionalNumber,
 });
+
 export const wellnessSchema = z.object({
   id: dateSchema,
   updated: optionalText,
@@ -76,6 +80,7 @@ export const wellnessSchema = z.object({
   spO2: optionalNumber,
   steps: nonnegative,
 });
+
 export const eventSchema = z.object({
   id: z.number().int(),
   start_date_local: localTimestamp,
@@ -87,6 +92,7 @@ export const eventSchema = z.object({
   distance: nonnegative,
   icu_training_load: nonnegative,
 });
+
 export const intervalSchema = z.object({
   id: z.number().int().nullish(),
   type: optionalText,
@@ -104,12 +110,18 @@ export const intervalSchema = z.object({
   total_elevation_gain: nonnegative,
   training_load: nonnegative,
 });
+
 export const intervalsSchema = z.object({
   id: activityIdSchema,
   icu_intervals: z.array(intervalSchema).max(1000).nullish(),
 });
+
 export type SourceAthlete = z.infer<typeof athleteSchema>;
+
 export type SourceActivity = z.infer<typeof activitySchema>;
+
 export type SourceWellness = z.infer<typeof wellnessSchema>;
+
 export type SourceEvent = z.infer<typeof eventSchema>;
+
 export type SourceInterval = z.infer<typeof intervalSchema>;

@@ -1,3 +1,7 @@
 onlyBuiltDependencies:
   - esbuild
   - workerd
+# Patch GHSA-g3hv-75wg-m249 in development tooling until its upstream ranges catch up.
+# These consumers use the retained Minimatch/match API; lint and CI verify compatibility.
+overrides:
+  'minimatch@>=7.0.0 <11.0.1': 11.0.8

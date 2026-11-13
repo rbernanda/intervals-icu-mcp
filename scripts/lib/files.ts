@@ -1,4 +1,5 @@
 import { access, writeFile } from 'node:fs/promises';
+
 export async function assertNewFile(path: string): Promise<void> {
   try {
     await access(path);
@@ -10,9 +11,12 @@ export async function assertNewFile(path: string): Promise<void> {
     `${path} already exists. Edit your local configuration; setup will not overwrite it.`,
   );
 }
+
+/** Exclusive creation prevents setup reruns from replacing an owner’s existing credentials. */
 export async function writePrivateFile(path: string, contents: string): Promise<void> {
   await writeFile(path, contents, { mode: 0o600, flag: 'wx' });
 }
+
 export function dotenvContents(values: Record<string, string>): string {
   if (Object.values(values).some((value) => /[\r\n\0]/.test(value)))
     throw new Error('Configuration values must fit on one line.');

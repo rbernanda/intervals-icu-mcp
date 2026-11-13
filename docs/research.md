@@ -43,3 +43,7 @@ Rechecked the official SDK registry: the installed `@modelcontextprotocol/server
 [Cloudflare registration reference](https://github.com/cloudflare/workers-oauth-provider/blob/main/docs/authorization-server.md) documents opt-in DCR and persistent client registration. The implementation keeps CIMD as default and DCR configurable, preserving the same consent/owner checks. Exact browser origins are owner settings rather than client-vendor assumptions.
 
 CI uses official `actions/checkout` and `actions/setup-node` v6 release commits resolved from their upstream Git tags. Both use the Node.js 24 action runtime; the application matrix tests Node.js 22 and 24. CI never handles athlete credentials or deploys.
+
+## Development dependency audit
+
+The full dependency audit identified [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) in the lint toolchain's minimatch 10 dependency. `pnpm-workspace.yaml` pins affected ranges to patched 11.0.8 until upstream ranges catch up. The actual consumers use the retained `Minimatch`, `match` and `minimatch` APIs; none use the removed `makeRe` API described in the [maintainer changelog](https://github.com/isaacs/minimatch/blob/main/changelog.md). Lint/type/test checks exercise the resolved toolchain, and the complete npm advisory audit is clear. This package is development tooling, not part of the deployed Worker.

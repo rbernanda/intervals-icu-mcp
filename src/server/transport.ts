@@ -12,6 +12,10 @@ import { TrainingService } from '../tools/service';
 import { createMcpServer } from './create-mcp-server';
 import { log, type Logger } from '../utils/errors';
 
+/**
+ * The provider checks audience/expiry; this handler also enforces scope and the configured owner.
+ * Each request gets a fresh service/client so its upstream deadline cannot leak into later calls.
+ */
 export function createProtectedMcp(
   config: Config,
   authorizationServer: OAuthAuthorizationServer<Env>,

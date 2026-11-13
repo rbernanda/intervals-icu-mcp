@@ -7,6 +7,7 @@ export const athlete = {
   email: 'private@example.com',
   sportSettings: [{ types: ['Run'], lthr: 170, threshold_pace: 4 }],
 };
+
 export const activities = [
   {
     id: 'a2',
@@ -52,6 +53,7 @@ export const activities = [
     icu_training_load: 40,
   },
 ];
+
 export const wellness = [
   {
     id: '2026-11-13',
@@ -67,6 +69,7 @@ export const wellness = [
     readiness: 80,
   },
 ];
+
 export const events = [
   {
     id: 10,
@@ -88,6 +91,7 @@ export const events = [
   },
   { id: 12, category: 'NOTES', name: 'Rest', start_date_local: '2026-11-14T00:00:00' },
 ];
+
 export const intervals = {
   id: 'a2',
   icu_intervals: [
@@ -102,6 +106,7 @@ export const intervals = {
     },
   ],
 };
+
 export function fixtureFetch(): typeof fetch {
   return async (input) => {
     const url = new URL(String(input));

@@ -19,6 +19,7 @@ const sportSchema = z
   .max(60)
   .regex(/^[A-Za-z][A-Za-z0-9 ]*$/)
   .optional();
+
 export const inputs = {
   profile: z.object({}).strict(),
   recent: z
@@ -42,6 +43,7 @@ export const inputs = {
     })
     .strict(),
 };
+
 const contextShape = {
   source: z.literal('Intervals.icu'),
   retrieved_at: z.string(),
@@ -49,6 +51,7 @@ const contextShape = {
   warnings: z.array(z.string()),
 };
 const rangeOutput = z.object(rangeShape);
+
 export const outputs = {
   profile: z.object({ ...contextShape, athlete: profileOutputSchema }),
   recent: z.object({

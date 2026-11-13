@@ -2,6 +2,7 @@ import type { Config } from '../config/env';
 
 export const MAX_REQUEST_BYTES = 32_768;
 
+/** Missing Origin is valid for server-to-server clients; present Host/Origin must match configured values. */
 export function isAllowedRequestOrigin(request: Request, config: Config): boolean {
   const url = new URL(request.url);
   const host = request.headers.get('host');
@@ -40,6 +41,7 @@ export function preflightResponse(request: Request, enableDcr: boolean): Respons
   });
 }
 
+/** Applies no-store even to OAuth responses, which can contain short-lived codes or tokens. */
 export function withPrivacyHeaders(response: Response, allowedOrigin?: string): Response {
   const secured = new Response(response.body, response);
   secured.headers.set('Cache-Control', 'no-store');

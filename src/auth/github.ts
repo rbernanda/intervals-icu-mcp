@@ -3,6 +3,7 @@ import type { Config } from '../config/env';
 import { AppError } from '../utils/errors';
 import { readBoundedJson } from '../utils/http';
 
+/** Produces the RFC 7636 S256 challenge using unpadded base64url encoding. */
 export async function pkceChallenge(verifier: string): Promise<string> {
   const hash = new Uint8Array(
     await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)),
@@ -12,6 +13,7 @@ export async function pkceChallenge(verifier: string): Promise<string> {
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 }
+
 export async function githubAuthorizeUrl(
   config: Config,
   state: string,
@@ -29,6 +31,11 @@ export async function githubAuthorizeUrl(
   }).toString();
   return url.toString();
 }
+
+/**
+ * Uses a temporary token to verify the immutable GitHub account ID, then discards that token.
+ * It is never stored as an MCP credential or forwarded to Intervals.icu.
+ */
 export async function verifyGithubUser(
   config: Config,
   code: string,

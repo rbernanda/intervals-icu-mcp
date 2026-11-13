@@ -3,6 +3,7 @@ import type { ConsentDescription } from '@cloudflare/workers-oauth-provider';
 export function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
 }
+
 export function renderConsentPage(details: ConsentDescription, handle: string): string {
   const publisher = details.clientDomain
     ? `Client domain: <strong>${escapeHtml(details.clientDomain)}</strong>.`

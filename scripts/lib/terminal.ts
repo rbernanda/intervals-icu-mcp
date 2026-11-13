@@ -17,6 +17,7 @@ export function createHiddenTerminal() {
       process.stdout.write('\n');
       return answer.trim() || fallback;
     },
+
     close() {
       terminal.close();
     },

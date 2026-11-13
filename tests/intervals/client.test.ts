@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { IntervalsClient, retryAfterMs } from '../../src/intervals/client';
 import { readBoundedJson } from '../../src/utils/http';
 const range = { start_date: '2026-11-01', end_date: '2026-11-13' };
+
 function setup(requestFetch: typeof fetch, timeoutMs = 1000) {
   const logger = vi.fn();
   const sleep = vi.fn(async () => {});
@@ -19,6 +20,7 @@ function setup(requestFetch: typeof fetch, timeoutMs = 1000) {
     sleep,
   };
 }
+
 describe('Intervals client', () => {
   it('uses documented Basic auth, paths, fields, inclusive timestamps and GET only', async () => {
     const requestFetch = vi.fn<typeof fetch>(async () => Response.json([]));

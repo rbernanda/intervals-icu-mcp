@@ -47,6 +47,7 @@ export function memoryKv() {
   // Test-only subset of the platform KV API used by the unmodified provider.
   return { kv: kv as KVNamespace, rows };
 }
+
 export function testEnv(kv = memoryKv().kv): Env {
   return {
     OAUTH_KV: kv,
@@ -62,6 +63,7 @@ export function testEnv(kv = memoryKv().kv): Env {
     OAUTH_ENABLE_DCR: 'false',
   };
 }
+
 export function context(): ExecutionContext {
   return {
     waitUntil: vi.fn(),
@@ -73,6 +75,7 @@ export function context(): ExecutionContext {
     abort: vi.fn(),
   } as ExecutionContext;
 }
+
 export async function issueToken(env: Env, options: { scopes?: string[]; userId?: string } = {}) {
   const as = createAuthorizationServer(parseConfig(env), () => {});
   const oauth = as.getOAuthApi(env);
@@ -128,6 +131,7 @@ export async function issueToken(env: Env, options: { scopes?: string[]; userId?
     throw new Error(`Fixture token exchange failed: ${result.error ?? response.status}`);
   return { ...result, authorizationServer: as, clientId: client.clientId, authUrl };
 }
+
 export function mcpRequest(
   env: Env,
   token?: string,

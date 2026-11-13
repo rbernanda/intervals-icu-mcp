@@ -17,6 +17,7 @@ export function createWorker(requestFetch: typeof fetch = fetch, logger: Logger 
     async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
       const started = performance.now();
       let corsOrigin: string | undefined;
+
       const finish = (response: Response): Response => {
         logger({
           event: 'request',
@@ -26,6 +27,7 @@ export function createWorker(requestFetch: typeof fetch = fetch, logger: Logger 
         });
         return withPrivacyHeaders(response, corsOrigin);
       };
+
       let response: Response;
       try {
         const config = parseConfig(env);
@@ -99,4 +101,5 @@ export function createWorker(requestFetch: typeof fetch = fetch, logger: Logger 
     },
   };
 }
+
 export default createWorker() satisfies ExportedHandler<Env>;

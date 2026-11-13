@@ -36,7 +36,7 @@ Do not add multi-user tenancy, centralized credential collection, a hosted SaaS 
 2. Make focused changes; reuse native APIs and keep runtime dependencies small.
 3. Add meaningful tests for changed behavior and security boundaries. Include empty, null, malformed and unauthorized cases where relevant.
 4. Use **synthetic** fixtures only. Invent athlete IDs, names, timestamps and metrics; do not anonymize and commit a real activity export. Do not attach real wellness payloads, logs, OAuth callback URLs containing codes, or screenshots containing credentials.
-5. Run the commands above. Run `pnpm format` if formatting fails.
+5. Run the commands above. Run `pnpm format` to apply ESLint fixes followed by Prettier. ESLint enforces blank lines around function declarations/assigned functions and between class methods; Prettier preserves them. Add JSDoc for non-obvious semantics, invariants or security boundaries rather than restating straightforward code.
 6. If changing Wrangler configuration, run `pnpm types` and commit the generated declarations. Update examples, authentication/client documentation and limits with the code.
 7. Update the lockfile when dependencies change. Consult primary documentation before SDK/API changes; keep Inspector checks working in both supported protocol eras.
 
@@ -48,7 +48,7 @@ Report vulnerabilities according to [SECURITY.md](SECURITY.md), rather than incl
 
 Before a release or making the repository public:
 
-- Run `pnpm check`, `pnpm types:portable`, `pnpm types:check`, `pnpm verify:runtime` and `pnpm audit --prod`.
+- Run `pnpm check`, `pnpm types:portable`, `pnpm types:check`, `pnpm verify:runtime` and `pnpm audit`.
 - Review `git status`, the proposed commit and any existing history for secrets or real athlete data. `check:public` is a heuristic, not proof that every possible secret has been found.
 - Enable GitHub private vulnerability reporting and repository secret scanning where available; set branch protection to require CI.
 - Publish source files and the lockfile. Exclude `.dev.vars`, `.env`, `wrangler.instance.jsonc`, local KV/state, logs, build output and dependency caches.

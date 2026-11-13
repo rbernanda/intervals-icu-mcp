@@ -26,14 +26,17 @@ export interface ServiceOptions {
   timezone: string;
   now?: () => Date;
 }
+
 export class TrainingService {
   private readonly now: () => Date;
+
   constructor(
     private readonly client: IntervalsClient,
     private readonly options: ServiceOptions,
   ) {
     this.now = options.now ?? (() => new Date());
   }
+
   private context(warnings: string[] = []) {
     return {
       source: 'Intervals.icu' as const,
@@ -42,6 +45,8 @@ export class TrainingService {
       warnings,
     };
   }
+
+  /** Complete aggregates must reject saturated ranges and restricted activity stubs rather than undercount. */
   private async activityRange(
     range: DateRange,
     requireComplete: boolean,
@@ -63,6 +68,7 @@ export class TrainingService {
       saturated,
     };
   }
+
   async profile(args: unknown) {
     inputs.profile.parse(args);
     return outputs.profile.parse({
@@ -70,6 +76,7 @@ export class TrainingService {
       athlete: normalizeProfile(await this.client.profile()),
     });
   }
+
   async recent(args: unknown) {
     const input = inputs.recent.parse(args);
     const end = input.end_date ?? todayInTimezone(this.now(), this.options.timezone);
@@ -103,6 +110,7 @@ export class TrainingService {
       upstream_saturated: saturated,
     });
   }
+
   async detail(args: unknown) {
     const input = inputs.detail.parse(args);
     const activity = await this.client.activity(input.activity_id);
@@ -137,6 +145,7 @@ export class TrainingService {
       intervals_truncated: truncated,
     });
   }
+
   async fitness(args: unknown) {
     const range = checkRange(inputs.range.parse(args));
     const records = await this.client.wellness(range);
@@ -149,6 +158,7 @@ export class TrainingService {
         .map(normalizeFitness),
     });
   }
+
   async wellness(args: unknown) {
     const range = checkRange(inputs.range.parse(args));
     const records = await this.client.wellness(range);
@@ -161,6 +171,7 @@ export class TrainingService {
         .map(normalizeWellness),
     });
   }
+
   async calendar(args: unknown) {
     const range = checkRange(inputs.range.parse(args));
     const [events, { rows: activities }] = await Promise.all([
@@ -180,6 +191,7 @@ export class TrainingService {
       entries: buildTrainingCalendar(activities, events, range),
     });
   }
+
   async summary(args: unknown) {
     const input = inputs.summary.parse(args);
     const end = todayInTimezone(this.now(), this.options.timezone);

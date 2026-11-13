@@ -2,10 +2,14 @@ import { OAuthAuthorizationServer } from '@cloudflare/workers-oauth-provider';
 import type { Config } from '../config/env';
 import { log, type Logger } from '../utils/errors';
 
+/** Advertised by the provider and separately enforced by the resource handler on every private request. */
 export const READ_SCOPE = 'intervals:read';
+
+/** Owner identity encrypted into the grant; it must agree with the verified token subject. */
 export interface AuthProps {
   userId: string;
 }
+
 export function createAuthorizationServer(
   config: Config,
   logger: Logger = log,

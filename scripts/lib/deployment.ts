@@ -1,11 +1,13 @@
 import { z } from 'zod';
 import { publicOriginSchema, timezoneSchema } from '../../src/config/env';
 
+/** Never copy these values into instance vars; they must remain Cloudflare Workers Secrets. */
 export const INSTANCE_SECRETS = [
   'INTERVALS_API_KEY',
   'INTERVALS_ATHLETE_ID',
   'GITHUB_CLIENT_SECRET',
 ] as const;
+
 const deploymentSchema = z
   .object({
     worker_name: z

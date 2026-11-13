@@ -7,6 +7,7 @@ import type {
 } from '../domain/models';
 import { isRunning, paceSecondsPerKm, type Activity, type Fitness } from '../domain/models';
 
+/** Preserves source units and timestamps; running cadence is explicitly converted from rpm to spm. */
 export function normalizeActivity(a: SourceActivity): Activity {
   return {
     id: a.id,
@@ -31,6 +32,8 @@ export function normalizeActivity(a: SourceActivity): Activity {
     training_load: a.icu_training_load ?? null,
   };
 }
+
+/** Whitelists display settings so future upstream profile fields cannot expose credentials or contact data. */
 export function normalizeProfile(p: SourceAthlete): z.infer<typeof profileOutputSchema> {
   return {
     id: p.id,
@@ -48,6 +51,11 @@ export function normalizeProfile(p: SourceAthlete): z.infer<typeof profileOutput
     })),
   };
 }
+
+/**
+ * Keeps Intervals CTL/ATL unchanged and labels same-day CTL - ATL as a local derivation.
+ * No daily source TSB is documented; ctlLoad and atlLoad remain distinct source values.
+ */
 export function normalizeFitness(w: SourceWellness): Fitness {
   return {
     date: w.id,
@@ -69,6 +77,8 @@ export function normalizeFitness(w: SourceWellness): Fitness {
     },
   };
 }
+
+/** Keeps HRV and subjective scores in their source-defined scales; missing values remain null. */
 export function normalizeWellness(w: SourceWellness): z.infer<typeof wellnessOutputSchema> {
   return {
     date: w.id,
@@ -90,6 +100,7 @@ export function normalizeWellness(w: SourceWellness): z.infer<typeof wellnessOut
     steps: w.steps ?? null,
   };
 }
+
 export function normalizeInterval(
   i: SourceInterval,
   sport?: string | null,

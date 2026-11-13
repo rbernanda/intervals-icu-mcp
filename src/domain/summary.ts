@@ -8,12 +8,18 @@ import {
   type Fitness,
 } from './models';
 const nullableNumber = z.number().nullable();
+
 export const sumSchema = z.object({
   value: nullableNumber,
   recorded_count: z.number().int(),
   missing_count: z.number().int(),
   complete: z.boolean(),
 });
+
+/**
+ * Returns a total only when every selected record supplies the metric.
+ * An empty complete collection totals zero; a collection containing null does not.
+ */
 export function sumRecorded(values: (number | null)[]): z.infer<typeof sumSchema> {
   const recorded = values.filter((value): value is number => value !== null);
   const complete = recorded.length === values.length;
@@ -24,6 +30,7 @@ export function sumRecorded(values: (number | null)[]): z.infer<typeof sumSchema
     complete,
   };
 }
+
 export const summarySchema = z.object({
   aggregation_origin: z.literal('computed from retrieved source records'),
   activity_count: z.number().int(),
@@ -46,6 +53,12 @@ export const summarySchema = z.object({
   longest_run: activityOutputSchema.nullable(),
   latest_fitness: fitnessOutputSchema.nullable(),
 });
+
+/**
+ * Groups runs by local Monday-based weeks and marks partial edge weeks.
+ * Weekly averages use covered days / 7, so partial weeks are not weighted as full weeks.
+ * Fitness retains the independent scope of its supplied records, even when activities are filtered.
+ */
 export function aggregateSummary(
   activities: Activity[],
   fitness: Fitness[],

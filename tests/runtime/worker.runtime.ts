@@ -19,6 +19,7 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
   const { OAUTH_KV: _kv, ...bindings } = env;
   void _kv;
   const upstreamFetch = fixtureFetch();
+
   const options = (origin: string, port: number, enableDcr = false) =>
     convertV4MiniflareOptions({
       modules: true,
@@ -39,6 +40,7 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
         });
       },
     } satisfies V4MiniflareOptions);
+
   const mf = new Miniflare(options(env.PUBLIC_ORIGIN, 0));
   const directory = await mkdtemp(join(tmpdir(), 'intervals-inspector-'));
   try {
@@ -123,6 +125,7 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
       expect(called.stdout).toContain('Test Runner');
       expect(called.stdout).not.toContain('MUST-NOT-LEAK');
     }
+
     // Exercise the opt-in compatibility endpoint in the real runtime too.
     const registrationRequest = () => ({
       method: 'POST',
@@ -135,6 +138,7 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
         response_types: ['code'],
       }),
     });
+
     expect((await fetch(`${origin}/oauth/register`, registrationRequest())).status).toBe(404);
     await mf.setOptions(options(origin, Number(new URL(origin).port), true));
     const registered = await fetch(`${origin}/oauth/register`, registrationRequest());

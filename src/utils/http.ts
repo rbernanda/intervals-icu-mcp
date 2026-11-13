@@ -1,4 +1,5 @@
 import { AppError } from './errors';
+
 /** Bounds streamed bodies even when Content-Length is absent or incorrect. */
 export async function readBoundedBytes(
   response: Pick<Response, 'headers' | 'body'>,
@@ -34,6 +35,7 @@ export async function readBoundedBytes(
   }
   return bytes;
 }
+
 export async function readBoundedJson(response: Response, maxBytes: number): Promise<unknown> {
   const bytes = await readBoundedBytes(response, maxBytes);
   try {
