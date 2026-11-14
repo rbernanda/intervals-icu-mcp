@@ -94,6 +94,10 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
     for (const browserOrigin of ['https://desktop.example.net', 'null']) {
       const consent = await fetch(authorizationUrl, { headers: { Origin: browserOrigin } });
       expect(consent.status).toBe(200);
+      expect(consent.headers.get('referrer-policy')).toBe('same-origin');
+      expect(consent.headers.get('content-security-policy')).toContain(
+        "form-action 'self' https://github.com http://127.0.0.1:54321;",
+      );
       expect(await consent.text()).toContain('Synthetic Native Client');
       expect(consent.headers.get('access-control-allow-origin')).toBeNull();
 
@@ -104,6 +108,7 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
         redirect: 'manual',
       });
       expect(forgedConsent.status).toBe(403);
+      expect(forgedConsent.headers.get('referrer-policy')).toBe('no-referrer');
 
       const forbiddenMcp = await fetch(`${origin}/mcp`, {
         method: 'POST',

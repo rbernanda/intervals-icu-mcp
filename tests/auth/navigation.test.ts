@@ -63,6 +63,10 @@ describe('cross-site OAuth navigation', () => {
         expect(await consent.text()).toContain('Synthetic Native Client');
         expect(consent.headers.get('access-control-allow-origin')).toBeNull();
         expect(consent.headers.get('cache-control')).toBe('no-store');
+        expect(consent.headers.get('referrer-policy')).toBe('same-origin');
+        expect(consent.headers.get('content-security-policy')).toContain(
+          "form-action 'self' https://github.com http://127.0.0.1:54321;",
+        );
         expect(upstream).not.toHaveBeenCalled();
       }),
   );
@@ -91,6 +95,7 @@ describe('cross-site OAuth navigation', () => {
         );
 
         expect(submission.status).toBe(403);
+        expect(submission.headers.get('referrer-policy')).toBe('no-referrer');
         expect(submission.headers.get('location')).toBeNull();
 
         const callback = await worker.fetch(
@@ -102,6 +107,7 @@ describe('cross-site OAuth navigation', () => {
         );
 
         expect(callback.status).toBe(400);
+        expect(callback.headers.get('referrer-policy')).toBe('no-referrer');
         expect(callback.headers.get('location')).toBeNull();
         expect(callback.headers.get('access-control-allow-origin')).toBeNull();
 

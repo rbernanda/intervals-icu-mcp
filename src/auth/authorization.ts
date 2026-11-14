@@ -46,10 +46,16 @@ export async function handleAuthorization(
       }
       const details = await oauth.describeConsent(auth);
       const consent = await oauth.beginConsent(auth);
+      const clientRedirectOrigin = new URL(auth.redirectUri).origin;
+
       consent.headers.set('Content-Type', 'text/html; charset=utf-8');
+      // no-referrer makes browser form POSTs send Origin: null, breaking the same-origin consent check.
+      consent.headers.set('Referrer-Policy', 'same-origin');
       consent.headers.set(
         'Content-Security-Policy',
-        "default-src 'none'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
+        // Browsers can apply form-action to redirects as well as the initial same-origin POST.
+        // The client redirect was validated by the OAuth provider; only its origin enters this policy.
+        `default-src 'none'; form-action 'self' https://github.com ${clientRedirectOrigin}; frame-ancestors 'none'; base-uri 'none'`,
       );
       return new Response(renderConsentPage(details, consent.handle), { headers: consent.headers });
     }

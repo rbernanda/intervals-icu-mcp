@@ -29,6 +29,8 @@ The [ChatGPT desktop app](https://learn.chatgpt.com/docs/extend/mcp) can show a 
 
 The host normally makes MCP requests without Origin. If it sends a browser Origin to `/mcp`, add that exact origin to `MCP_ALLOWED_ORIGINS`. Never use `*`. Browser GET navigation to `/authorize` and `/callback` does not require a CORS entry; consent POSTs remain same-origin and callbacks require browser-bound state. A 403 before the consent page on an older deployment can be an overbroad Origin check; update to the current code and restart sign-in rather than adding wildcard origins.
 
+If an older deployment returns 403 after clicking **Allow**, update it: `Referrer-Policy: no-referrer` makes browsers send `Origin: null` on form POSTs. The consent page uses `same-origin`, preserving its POST Origin while suppressing cross-site referrers; other responses use `no-referrer`. The form policy permits GitHub and the provider-validated client redirect origin so browsers can follow the OAuth redirects. Do not work around this by accepting null Origins on consent POSTs.
+
 ## MCP Inspector and other clients
 
 `pnpm verify:runtime` is the reproducible automated check: it starts the actual Worker bundle on loopback, uses isolated KV, runs official Inspector strict discovery and invocation in both protocol modes, and runs the smoke script. Athlete records are synthetic; fixture tokens are issued by the real OAuth provider. No live secrets, cloud deployment or browser sign-in are needed.

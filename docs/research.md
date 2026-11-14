@@ -42,7 +42,13 @@ Rechecked the official SDK registry: the installed `@modelcontextprotocol/server
 
 [Cloudflare registration reference](https://github.com/cloudflare/workers-oauth-provider/blob/main/docs/authorization-server.md) documents opt-in DCR and persistent client registration. The implementation keeps CIMD as default and DCR configurable, preserving the same consent/owner checks. Exact browser origins are owner settings rather than client-vendor assumptions.
 
-CI uses official `actions/checkout` and `actions/setup-node` v6 release commits resolved from their upstream Git tags. Both use the Node.js 24 action runtime; the application matrix tests Node.js 22 and 24. CI never handles athlete credentials or deploys.
+CI pins official `actions/checkout` and `actions/setup-node` release commits, with reviewed Dependabot updates. The application matrix tests Node.js 22 and 24. CI never handles athlete credentials or deploys.
+
+## Browser consent headers
+
+The [Fetch Standard's Origin algorithm](https://fetch.spec.whatwg.org/#append-a-request-origin-header) serializes the Origin as `null` for non-CORS form POSTs under `no-referrer`. The consent page therefore uses `Referrer-Policy: same-origin`; it preserves same-origin form checks and suppresses cross-site referrers. Other responses retain `no-referrer`. A real Chrome test with synthetic loopback forms confirmed both header behaviors.
+
+Browsers can also apply [CSP form-action to redirects](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/form-action). The consent page permits self, GitHub and the already-validated client redirect origin. It never constructs that policy from unvalidated request parameters or includes callback queries, codes or state in the header.
 
 ## Development dependency audit
 

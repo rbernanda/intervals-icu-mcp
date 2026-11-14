@@ -177,6 +177,7 @@ describe('OAuth access control', () => {
     const response = await worker.fetch(new Request(authUrl), env, context());
     expect(response.status).toBe(200);
     expect(response.headers.get('content-security-policy')).toContain("frame-ancestors 'none'");
+    expect(response.headers.get('referrer-policy')).toBe('same-origin');
     const html = await response.text();
     const handle = /name="handle" value="([^"]+)"/.exec(html)![1]!;
     const body = new URLSearchParams({ handle, decision: 'approve', scope: 'intervals:read' });
@@ -203,6 +204,7 @@ describe('OAuth access control', () => {
     expect(approved.status).toBe(302);
     const location = new URL(approved.headers.get('location')!);
     expect(location.origin).toBe('https://github.com');
+    expect(approved.headers.get('referrer-policy')).toBe('no-referrer');
     expect(location.searchParams.get('code_challenge_method')).toBe('S256');
     const replay = await worker.fetch(
       new Request(`${env.PUBLIC_ORIGIN}/authorize`, {

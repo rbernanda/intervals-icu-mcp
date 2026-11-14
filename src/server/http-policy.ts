@@ -58,12 +58,17 @@ export function preflightResponse(request: Request, enableDcr: boolean): Respons
   });
 }
 
-/** Applies no-store even to OAuth responses, which can contain short-lived codes or tokens. */
+/**
+ * Disables caching of OAuth codes/tokens. Consent may opt into same-origin referrers so form POSTs retain Origin.
+ * Other responses default to no-referrer.
+ */
 export function withPrivacyHeaders(response: Response, allowedOrigin?: string): Response {
   const secured = new Response(response.body, response);
   secured.headers.set('Cache-Control', 'no-store');
   secured.headers.set('X-Content-Type-Options', 'nosniff');
-  secured.headers.set('Referrer-Policy', 'no-referrer');
+  if (!secured.headers.has('Referrer-Policy')) {
+    secured.headers.set('Referrer-Policy', 'no-referrer');
+  }
   secured.headers.set('X-Frame-Options', 'DENY');
   if (allowedOrigin) {
     secured.headers.set('Access-Control-Allow-Origin', allowedOrigin);
