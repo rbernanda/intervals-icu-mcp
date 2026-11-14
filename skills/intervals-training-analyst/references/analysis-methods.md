@@ -13,6 +13,8 @@ Use only the section relevant to the chosen workflow. These are descriptive comp
 
 ## Period comparison and trend evaluation
 
+Prefer `compare_training_periods` with nested `current` and `baseline` inclusive ranges and the requested sport filter. Use its computed differences, recorded/missing counts and weekly-normalized volume directly. `value` is null when required metrics or structural coverage are incomplete; `known_sum` is only a subtotal. `complete_returned_records` is not verified synchronization. Read both periods' `data_quality`, current-day flags and all-sport dated fitness context. Do not redo the deterministic calculation in prose or fill unavailable percentages.
+
 For matched periods with complete, comparable metrics A (current) and B (baseline), report absolute change A − B in the metric's unit. Percentage change = 100 × (A − B) / B only when B > 0; for B = 0 say percentage unavailable and report the absolute change. Do not average pace strings or training-load values from incompatible methods.
 
 For pooled pace, prefer a consistent definition: `1000 × sum(moving_time_s) / sum(distance_m)` in seconds/km, with full positive distance/moving-time coverage, explicitly labeled an agent-computed moving-time pace. It can differ from source speed-derived pace. Alternatively compare individual source paces and their distribution without conflating definitions. Keep full precision until presentation.
@@ -31,6 +33,14 @@ Whole-run means support an overview, not a claim about rising HR or late-session
 
 ## Comparable activities and aerobic efficiency proxies
 
+Prefer `compare_running_workouts` for comparable sessions. Default reference is the latest initially eligible session; all tolerances are anchor-relative. Defaults: at least 1800 moving seconds, distance/duration within 25% of reference, HR within 10 bpm, elevation gain/km within 10 m/km, same running type and matching indoor/outdoor flag when known. These are configurable operational rules, not universal physiological truths. Missing power/cadence is acceptable; required missing HR is not. `require_hr: false` is an explicit user-appropriate waiver with a caveat. Do not waive HR for an efficiency proxy.
+
+Explicit `activity_ids` with `session_type` designate athlete-selected easy/long_run/threshold/interval sessions; do not assign a category merely from names. Without IDs, `long_run` uses a labeled ≥5400-second candidate heuristic and `any` remains unclassified; easy/threshold/interval categories require IDs. Source RACE metadata excludes mismatched sessions. The tool compares whole-session summaries, not repetition structures. Explain every important exclusion and a shortfall from five requested runs.
+
+Prefer `analyze_aerobic_efficiency` with athlete-designated `steady_aerobic_activity_ids`. With no classification it reports insufficient evidence. Only positive speed/HR/distance/time, usable HR, duration/comparability checks and appropriate source subtype qualify. User classification is an assumption, not stream-verified steady effort; exclude known interval/mixed sessions. An optional user HR ceiling is not inferred from a population threshold. Source `icu_efficiency_factor` is preserved separately: its API schema does not establish a sport-independent calculation basis.
+
+The deterministic proxy is `average_speed_mps / average_heart_rate_bpm`, units `(m/s)/bpm`. It uses equal-session descriptive statistics, including sample SD with denominator n−1. The requested range splits after floor(inclusive days/2): early is before `split_date`, later is on/after. Require at least four eligible sessions and two in each half. Compare half means with the usual percentage formula; default ±2% is only a configurable descriptive tolerance. `within_tolerance` is not proof of no physiological change. Respect `insufficient_evidence`; do not invent a trend from single points. Custom cycling/swimming efficiency is unsupported.
+
 Choose inclusion criteria before ranking results: same sport/setting (outdoor/treadmill if known), similar purpose/intensity, duration/distance and elevation. Treat TrailRun, Run and VirtualRun separately unless a justified comparison is possible. Terrain, weather and device changes are not exposed by these tools; use only athlete-provided context and mark unknown factors. Do not infer treadmill status from VirtualRun alone or course conditions from a name alone.
 
 For “five long runs,” describe the selection rule (user-designated long runs, or a clearly labeled duration/distance-based candidate heuristic), then confirm comparable purpose. If only three suitable sessions exist, compare three and explain the gap rather than padding with races, trail runs or short fast sessions.
@@ -43,7 +53,7 @@ Report included n/N and assumptions, not statistical certainty. HR lag, pauses, 
 
 Proper within-session decoupling requires comparable steady segments with aligned speed (or suitable power) and HR, with warm-up, stops and changing workload excluded. For two eligible segments, E1 = v1/h1 and E2 = v2/h2 as above; an explicitly defined efficiency-drop percentage is D = 100 × (E1 − E2) / E1. Sign conventions differ; state this one. Do not apply universal diagnostic cutoffs.
 
-This MCP does not expose streams or a dedicated decoupling metric. Comparable source intervals may support only a **segment-level descriptive proxy** when timing, workload and HR coverage are sufficient; otherwise report drift as unassessable. Whole-session averages, an HR maximum or unaligned intervals cannot prove drift, dehydration or poor aerobic fitness. Do not claim to have examined a continuous trace.
+This MCP does not expose streams. Analytics samples preserve optional source `decoupling` as `source_decoupling`, with source-defined basis/sign conventions; it is not computed from averages or used as the speed/HR proxy. Comparable source intervals may support only a **segment-level descriptive proxy** when timing, workload and HR coverage are sufficient; otherwise report drift as unassessable. Whole-session averages, an HR maximum or unaligned intervals cannot prove drift, dehydration or poor aerobic fitness. Do not claim to have examined a continuous trace.
 
 ## Race preparation evidence
 

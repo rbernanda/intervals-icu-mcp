@@ -1,0 +1,65 @@
+{
+  "evaluation_kind": "synthetic contract regression; no model activation claim",
+  "scenarios": [
+    {
+      "id": "weekly",
+      "prompt": "How did my training volume change from the previous week?",
+      "preferred_tool": "compare_training_periods",
+      "variant": "standard"
+    },
+    {
+      "id": "efficiency",
+      "prompt": "Compare speed relative to HR for the steady aerobic long runs I selected.",
+      "preferred_tool": "analyze_aerobic_efficiency",
+      "variant": "standard"
+    },
+    {
+      "id": "five-long-runs",
+      "prompt": "Compare my last five long runs.",
+      "preferred_tool": "compare_running_workouts",
+      "variant": "standard"
+    },
+    {
+      "id": "missing-hrv",
+      "prompt": "Review my week and recovery even if HRV and resting HR are missing.",
+      "preferred_tool": "compare_training_periods",
+      "variant": "missing-wellness"
+    },
+    {
+      "id": "negative-form",
+      "prompt": "My computed form is negative. Review what the source data shows.",
+      "preferred_tool": "compare_training_periods",
+      "variant": "standard"
+    },
+    {
+      "id": "short-history",
+      "prompt": "Is my aerobic efficiency improving with this short history?",
+      "preferred_tool": "analyze_aerobic_efficiency",
+      "variant": "short-history"
+    },
+    {
+      "id": "cycling",
+      "prompt": "Calculate cycling aerobic efficiency.",
+      "preferred_tool": "analyze_aerobic_efficiency",
+      "variant": "standard"
+    },
+    {
+      "id": "legacy",
+      "prompt": "Compare my week on an older server without analytical tools.",
+      "preferred_tool": "get_recent_activities",
+      "variant": "standard"
+    },
+    {
+      "id": "disconnected",
+      "prompt": "Analyze my latest Intervals.icu training with no MCP connection.",
+      "preferred_tool": null,
+      "variant": "disconnected"
+    },
+    {
+      "id": "programming",
+      "prompt": "Explain TypeScript generic constraints.",
+      "preferred_tool": null,
+      "variant": "unrelated"
+    }
+  ]
+}

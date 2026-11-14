@@ -161,6 +161,13 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
         },
       );
       expect(listed.stdout).toContain('get_training_summary');
+      for (const name of [
+        'compare_training_periods',
+        'analyze_aerobic_efficiency',
+        'compare_running_workouts',
+      ]) {
+        expect(listed.stdout).toContain(name);
+      }
       const called = await promisify(execFile)(
         process.execPath,
         [
@@ -183,6 +190,34 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
       );
       expect(called.stdout).toContain('Test Runner');
       expect(called.stdout).not.toContain('MUST-NOT-LEAK');
+      const analyticalCall = await promisify(execFile)(
+        process.execPath,
+        [
+          ...args,
+          '--method',
+          'tools/call',
+          '--tool-name',
+          'compare_training_periods',
+          '--tool-args-json',
+          JSON.stringify({
+            current: { start_date: '2026-11-08', end_date: '2026-11-14' },
+            baseline: { start_date: '2026-11-01', end_date: '2026-11-07' },
+            sport_type: 'running',
+          }),
+        ],
+        {
+          timeout: 15000,
+          env: {
+            ...process.env,
+            MCP_INSPECTOR_OAUTH_STATE_PATH: join(directory, 'oauth.json'),
+            MCP_CLIENT_CONFIG_PATH: join(directory, 'client.json'),
+          },
+        },
+      );
+      expect(analyticalCall.stdout).toContain('computed_same_day_form');
+      expect(analyticalCall.stdout).toContain('endurance-analytics/0.2.0');
+      expect(analyticalCall.stdout).toContain('30000');
+      expect(analyticalCall.stdout).not.toContain('MUST-NOT-LEAK');
     }
 
     // Exercise the opt-in compatibility endpoint in the real runtime too.

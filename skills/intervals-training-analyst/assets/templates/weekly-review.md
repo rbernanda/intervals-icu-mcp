@@ -12,7 +12,7 @@ Adapt length/language to the request; omit irrelevant sections and preserve impo
 
 ## Comparison and observations
 
-{{Matched baseline dates, absolute and valid percentage changes, long-run contribution when supported; distinguish observations from interpretation.}}
+{{Matched baseline dates; reuse compare_training_periods changes and provenance without recalculation. Explain ZERO_BASELINE, null totals, known-only subtotals, unequal windows and partial current day where relevant. Distinguish observations from interpretation.}}
 
 ## Recovery context and practical considerations
 

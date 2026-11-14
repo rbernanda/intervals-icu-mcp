@@ -54,6 +54,11 @@ export const activitySchema = z.object({
   icu_training_load: nonnegative,
   icu_ctl: optionalNumber,
   icu_atl: optionalNumber,
+  icu_efficiency_factor: optionalNumber,
+  decoupling: optionalNumber,
+  trainer: z.boolean().nullish(),
+  sub_type: optionalText,
+  icu_ignore_hr: z.boolean().nullish(),
 });
 
 export const wellnessSchema = z.object({

@@ -55,6 +55,8 @@ Tinjau latihan lari tujuh hari terakhir dan konteks recovery saya.
 
 The skill should not activate for MCP development, unrelated programming or generic fitness advice without relevant athlete data. Missing tools should produce a short dependency explanation and a connection-doc link, never invented private metrics or a request for API keys.
 
+With v0.2 analytical tools, the skill prefers deterministic period comparisons, running efficiency proxies and workout comparisons. Ordinary details, wellness, calendar and race-evidence retrieval remain available. Older instances keep a disclosed retrieval/arithmetic fallback when coverage permits. Strict aerobic analysis requires athlete-designated steady sessions; names alone are insufficient. See [methods and thresholds](analytics-methodology.md).
+
 ## Reproducible checks and evaluations
 
 ```bash
@@ -66,6 +68,8 @@ pnpm build
 `check:skill` validates YAML/frontmatter, required resources, relocatable links, templates, Codex UI metadata and canonical discovery. Vitest additionally checks the documented names against real MCP discovery, relocation failure detection, date boundaries and synthetic metric coverage. `check:public` scans publishable files, including relative symlinks; it is a heuristic, not a proof that arbitrary secrets cannot exist. CI runs these checks through `pnpm check` without credentials or a model API.
 
 Behavioral scenarios live in `tests/skills/scenarios.json`, with review expectations in `tests/skills/evals.json`. They cover the four workflows, missing connection, HRV/RHR, power/cadence, negative computed form, sparse/incompatible history, an unrelated programming control and malicious activity text. A fixed synthetic clock straddles a UTC/local date boundary and a DST transition.
+
+`tests/skills/analytics-scenarios.json` adds ten v0.2 regression specifications. Vitest executes the declared service/tool contracts with synthetic data and checks preferred-tool/fallback guidance. These deterministic checks do not demonstrate that an independent LLM chose the right tool or prove automatic activation. See [analytics validation evidence](analytics-validation.md) for this distinction.
 
 To inspect the test-only tool registry or execute a fixture call:
 

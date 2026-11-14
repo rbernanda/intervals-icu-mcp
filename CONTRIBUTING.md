@@ -21,6 +21,7 @@ For live development use `pnpm setup:local` and `pnpm dev`. Keep real credential
 ## Architecture
 
 - `src/domain`: platform-independent models and aggregation. No Cloudflare, MCP, identity-provider or upstream HTTP dependencies. Lint rules and `types:portable` enforce the boundary.
+- `src/analytics`: pure, deterministic, sport-neutral calculations and explicit running-specific eligibility. No network/environment access. Keep units, missingness, quality and provenance with numerical outputs; document methods in [analytics methodology](docs/analytics-methodology.md).
 - `src/intervals`: native-fetch upstream client, external schemas and Intervals field normalization. Source metrics must keep their actual semantics.
 - `src/tools`: tool contracts, use cases, input/output validation and data sufficiency rules.
 - `src/server`: official MCP SDK registration and stateless transport.

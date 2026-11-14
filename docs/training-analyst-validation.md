@@ -1,5 +1,7 @@
 # Training Analyst skill validation
 
+This page records the initial skill validation before deterministic analytics. See [v0.2 analytics validation](analytics-validation.md) for the updated ten-tool contracts and current local checks.
+
 Validated locally on 2026-11-14. All training inputs and evaluation outputs are synthetic. No live Intervals account, private activity export or upstream credential was used in these skill evaluations.
 
 ## Installation and package checks

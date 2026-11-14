@@ -15,9 +15,25 @@ export const mockToolMethods = {
   get_wellness: 'wellness',
   get_training_calendar: 'calendar',
   get_training_summary: 'summary',
+  compare_training_periods: 'compare',
+  analyze_aerobic_efficiency: 'efficiency',
+  compare_running_workouts: 'workouts',
 } as const;
 
 export type MockToolName = keyof typeof mockToolMethods;
+
+/** Uses the same API-backed services as MCP while preserving the legacy fixture runner. */
+export async function invokeMockTool(service: TrainingService, tool: MockToolName, args: unknown) {
+  if (
+    tool === 'compare_training_periods' ||
+    tool === 'analyze_aerobic_efficiency' ||
+    tool === 'compare_running_workouts'
+  ) {
+    return service.analytics[mockToolMethods[tool]](args);
+  }
+
+  return service[mockToolMethods[tool]](args);
+}
 
 /** Purely synthetic records; variant changes exercise missing data and comparability boundaries. */
 export function syntheticRecords(variant: string) {
@@ -196,7 +212,7 @@ async function main(): Promise<void> {
     throw new Error('MCP tools unavailable in this synthetic scenario.');
   }
 
-  const result = await mockService(scenario.variant)[mockToolMethods[tool]](args);
+  const result = await invokeMockTool(mockService(scenario.variant), tool, args);
   if (values.trace) {
     await appendFile(values.trace, JSON.stringify({ tool, args }) + '\n', { mode: 0o600 });
   }

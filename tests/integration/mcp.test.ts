@@ -5,7 +5,7 @@ import { fixtureFetch } from '../fixtures/data';
 import { context, issueToken, mcpRequest, testEnv } from '../helpers';
 
 describe('authenticated MCP Streamable HTTP', () => {
-  it('initializes using official client, discovers exactly seven read-only tools and invokes structured output', async () => {
+  it('initializes using official client, preserves seven tools and discovers three read-only analytics tools', async () => {
     const env = testEnv();
     const { access_token } = await issueToken(env);
     const worker = createWorker(fixtureFetch(), () => {});
@@ -17,7 +17,7 @@ describe('authenticated MCP Streamable HTTP', () => {
     try {
       await client.connect(transport);
       const tools = await client.listTools();
-      expect(tools.tools).toHaveLength(7);
+      expect(tools.tools).toHaveLength(10);
       for (const tool of tools.tools) {
         expect(tool.annotations?.readOnlyHint).toBe(true);
         expect(tool.outputSchema).toBeDefined();

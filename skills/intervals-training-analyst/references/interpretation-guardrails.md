@@ -7,6 +7,8 @@
 - Do not fill nulls with zero, interpolate absent dates, invent HRV/RHR baselines or interpret an absent record as normal recovery. Describe n available/N expected or selected, excluding incompatible records transparently.
 - Avoid confident trends from a few points. State sample size and variability; do not cherry-pick best performances. Correlation between load, HR, sleep and pace does not identify a cause.
 - Respect sport/method scope. Source fitness is not necessarily running-only. No default HRV scale, ideal cadence, universal safe load increase or CTL/ATL/form cutoff follows from these fields.
+- Prefer deterministic analytical tool values; never silently replace their nulls, percentages, proxy definitions or selections with LLM calculations. `complete_returned_records` certifies supplied metric coverage only, not synchronized real-world training. Unknown inventory, partial current days and capped decisions remain limitations.
+- An analytical tool reporting `unsupported_sport` is not a cycling/swimming efficiency implementation. `insufficient_evidence` is not a negative performance finding. Descriptive comparability levels are rule outcomes, not scientific confidence percentages. User-designated aerobic IDs require real context; do not fabricate classification to make the tool succeed.
 
 ## Physiology and medical boundaries
 

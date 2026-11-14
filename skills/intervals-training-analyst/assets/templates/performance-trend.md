@@ -12,7 +12,7 @@ Adapt to the athlete's language and question; a small comparison need not become
 
 ## Metric comparison and findings
 
-{{Source observations and explicitly computed differences/proxies with formulas. Use consistent denominators and pace definitions.}}
+{{Reuse analyze_aerobic_efficiency or compare_running_workouts metrics and provenance. Keep source efficiency/decoupling separate from computed speed_hr_proxy. Include sample/early/later statistics and rule-based comparability; never replace unavailable results or re-average paces.}}
 
 ## Confidence, limitations and implications
 

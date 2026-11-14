@@ -14,6 +14,7 @@ import { AppError } from '../utils/errors';
 import { matchesSport } from '../domain/models';
 import { aggregateSummary } from '../domain/summary';
 import { inputs, outputs } from './contracts';
+import { AnalyticsService } from './analytics/service';
 
 const METRIC_NOTE =
   'Distances are meters, durations seconds, speed m/s, pace s/km (computed as 1000 / average_speed), power watts, heart rate bpm. Running cadence spm is computed as 2 × source rpm. Training load preserves source units.';
@@ -29,12 +30,14 @@ export interface ServiceOptions {
 
 export class TrainingService {
   private readonly now: () => Date;
+  readonly analytics: AnalyticsService;
 
   constructor(
     private readonly client: IntervalsClient,
     private readonly options: ServiceOptions,
   ) {
     this.now = options.now ?? (() => new Date());
+    this.analytics = new AnalyticsService(client, { timezone: options.timezone, now: this.now });
   }
 
   private context(warnings: string[] = []) {

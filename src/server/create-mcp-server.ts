@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/server';
 import type { z } from 'zod';
 import type { TrainingService } from '../tools/service';
 import { inputs, outputs } from '../tools/contracts';
+import { analyticsInputs, analyticsOutputs } from '../tools/analytics/contracts';
 import { log, safeError, type Logger } from '../utils/errors';
 
 export function createMcpServer(service: TrainingService, logger: Logger = log): McpServer {
@@ -127,6 +128,27 @@ export function createMcpServer(service: TrainingService, logger: Logger = log):
     inputs.summary,
     outputs.summary,
     (args) => service.summary(args),
+  );
+  register(
+    'compare_training_periods',
+    'Deterministically compare two explicit non-overlapping athlete-local periods, each at most 90 inclusive days. Optional sport filter; running includes Run/TrailRun/VirtualRun. Returns covered-record volume/load, absolute/percentage changes, weekly-normalized volume, source CTL/ATL and labeled computed_same_day_form, provenance and data quality. No claim of independently verified synchronization completeness.',
+    analyticsInputs.compare,
+    analyticsOutputs.compare,
+    (args) => service.analytics.compare(args),
+  );
+  register(
+    'analyze_aerobic_efficiency',
+    'Observational running speed/HR proxy over up to 90 local days. Supply steady_aerobic_activity_ids only for sessions the athlete has designated as steady aerobic; names alone do not qualify. Defaults to insufficient evidence without classification. Requires >=4 eligible sessions and >=2 per calendar half. Configurable comparability heuristics, source EF kept separate, no running-economy/causal claim. Other sports return unsupported_sport.',
+    analyticsInputs.efficiency,
+    analyticsOutputs.efficiency,
+    (args) => service.analytics.efficiency(args),
+  );
+  register(
+    'compare_running_workouts',
+    'Select and compare at most 20 running sessions (default 5) within 90 local days, against an explicit or latest eligible reference. Transparent duration/distance/HR/elevation and known indoor/outdoor rules. Optional user-selected activity_ids designate easy/threshold/interval purpose; long_run without IDs uses a labeled >=90-minute candidate heuristic. Returns source metrics, weighted moving pace, provenance and exclusion reasons. Other sports return unsupported_sport. No physiological score or interval-structure inference.',
+    analyticsInputs.workouts,
+    analyticsOutputs.workouts,
+    (args) => service.analytics.workouts(args),
   );
   return server;
 }

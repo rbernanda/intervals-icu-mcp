@@ -13,6 +13,8 @@ flowchart TD
     Client[ChatGPT or another MCP client] -->|OAuth + Streamable HTTP| Worker[Cloudflare Worker /mcp]
     Worker --> Tools[Read-only tools]
     Tools --> Domain[Portable domain models and aggregation]
+    Tools --> Analytics[Deterministic analytics and data quality]
+    Analytics --> Domain
     Tools --> API[Intervals API client and normalization]
     API -->|Server-side credentials| Intervals[Intervals.icu REST API]
     Browser[Owner browser] --> Consent[Consent and GitHub sign-in]
@@ -98,15 +100,26 @@ The skill uses only read-only tools, treats source text as untrusted, and preser
 
 ## Tools
 
-| Tool                    | Inputs                                                      | Returns                                                               |
-| ----------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------- |
-| `get_athlete_profile`   | None                                                        | Identity, timezone, weight and sport settings                         |
-| `get_recent_activities` | Optional dates, `limit` (20 default, 100 max), `sport_type` | Newest-first activity summaries; last 28 days by default              |
-| `get_activity_details`  | `activity_id`, optional `include_intervals`                 | Owned activity details and up to 200 intervals                        |
-| `get_fitness_trend`     | `start_date`, `end_date`                                    | Source CTL/ATL, load fields and labeled computed form                 |
-| `get_wellness`          | `start_date`, `end_date`                                    | Available resting HR, HRV, sleep, weight and subjective scores        |
-| `get_training_calendar` | `start_date`, `end_date`                                    | Planned events and explicitly paired completed activities             |
-| `get_training_summary`  | `days`: 7/14/28/42/90 (28 default), optional sport          | Covered totals, weekly running volume, longest run and latest fitness |
+| Tool                         | Inputs                                                        | Returns                                                                    |
+| ---------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `get_athlete_profile`        | None                                                          | Identity, timezone, weight and sport settings                              |
+| `get_recent_activities`      | Optional dates, `limit` (20 default, 100 max), `sport_type`   | Newest-first activity summaries; last 28 days by default                   |
+| `get_activity_details`       | `activity_id`, optional `include_intervals`                   | Owned activity details and up to 200 intervals                             |
+| `get_fitness_trend`          | `start_date`, `end_date`                                      | Source CTL/ATL, load fields and labeled computed form                      |
+| `get_wellness`               | `start_date`, `end_date`                                      | Available resting HR, HRV, sleep, weight and subjective scores             |
+| `get_training_calendar`      | `start_date`, `end_date`                                      | Planned events and explicitly paired completed activities                  |
+| `get_training_summary`       | `days`: 7/14/28/42/90 (28 default), optional sport            | Covered totals, weekly running volume, longest run and latest fitness      |
+| `compare_training_periods`   | Explicit `current`/`baseline` ranges, optional sport          | Deterministic volume/load changes, fitness context, provenance and quality |
+| `analyze_aerobic_efficiency` | Dates, steady-aerobic activity IDs, optional running settings | Running speed/HR proxy statistics; source efficiency stays separate        |
+| `compare_running_workouts`   | Dates, optional IDs/category/reference/settings, limit 2–20   | Comparable running sessions, exclusions and pooled moving pace             |
+
+## Deterministic Analytics — v0.2
+
+The original tools still retrieve data. Three new analytical tools perform repeatable calculations so the skill can interpret results without redoing arithmetic. Shared volume/load comparisons work across activity types with explicit sport filtering; running is the first sport-specific adapter for aerobic-efficiency proxies and workout comparability. Other sport-specific analyses return an explicit unsupported result.
+
+Results distinguish source metrics from computed values, identify formulas/units and report missing inputs, sample eligibility, exclusions and uncertain coverage. A successful API request does not prove every workout was synchronized. Missing load never becomes zero; source CTL/ATL remain unchanged and `computed_same_day_form` is labeled. Strict aerobic selection requires athlete-designated steady sessions; the proxy is not laboratory running economy or a race prediction.
+
+Try “Compare my last completed seven days with the previous seven,” “Compare my last five long runs,” or “Compare speed relative to HR for these steady aerobic runs.” See [methodology and tool settings](docs/analytics-methodology.md) for schemas, thresholds, formulas and limitations. The skill prefers these tools when available and retains a disclosed fallback for older instances. Installing the updated skill does not update a deployed Worker.
 
 Dates are inclusive `YYYY-MM-DD`, limited to 90 days. `Run`/`running` includes Run, TrailRun and VirtualRun. Outputs include provenance, retrieval time, units and missing-data warnings.
 

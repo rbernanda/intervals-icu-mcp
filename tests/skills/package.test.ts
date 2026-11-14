@@ -80,7 +80,9 @@ describe('distributable training analyst skill', () => {
         'utf8',
       );
       const documented = [
-        ...new Set([...mapping.matchAll(/`(get_[a-z_]+)`/g)].map((match) => match[1])),
+        ...new Set(
+          [...mapping.matchAll(/`((?:get|compare|analyze)_[a-z_]+)`/g)].map((match) => match[1]),
+        ),
       ].sort();
       expect(documented).toEqual(discovered.map((tool) => tool.name).sort());
       expect(Object.keys(mockToolMethods).sort()).toEqual(documented);

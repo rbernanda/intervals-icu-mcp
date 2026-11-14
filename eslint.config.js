@@ -73,6 +73,27 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/analytics/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            '@cloudflare/*',
+            'cloudflare:*',
+            '@modelcontextprotocol/*',
+            '**/intervals/*',
+            '**/auth/*',
+            '**/server/*',
+            '**/config/*',
+            '**/tools/*',
+          ],
+        },
+      ],
+      'no-restricted-globals': ['error', 'fetch', 'process'],
+    },
+  },
+  {
     files: ['tests/**/*.ts'],
     rules: {
       // Fetch and KV doubles intentionally return promises without asynchronous work.
