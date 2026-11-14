@@ -15,15 +15,17 @@ CIMD is the preferred default for new clients. Optional DCR advertises `/oauth/r
 
 ## ChatGPT
 
+Follow the [onboarding runbook](onboarding-runbook.md#6-register-in-chatgpt-mode) for the step-by-step registration and live-data check. **Native Codex and ChatGPT mode are separate connections.** A working native connection or a plugin marked **desktop only** does not establish a hosted ChatGPT connection.
+
 Current [OpenAI authentication documentation](https://developers.openai.com/plugins/build/auth) supports authorization-code + S256, resource/issuer discovery and CIMD, including public `none` and `private_key_jwt` client authentication. It also supports DCR where configured. Machine-to-machine grants and arbitrary customer API-key headers are not a substitute for this user authorization flow. These are documented capabilities, not evidence that a particular account's live installation has succeeded.
 
 1. Deploy your own instance and verify its actual HTTPS URL.
 2. Open **ChatGPT → Plugins → plus → Add custom MCP server** (placement/availability can vary by workspace). Name it **Intervals.icu Training** and enter `<actual-origin>/mcp`.
 3. Select **OAuth** and **CIMD** if a registration selector appears. Leave manual client ID/secret empty. Do not choose anonymous access. Let metadata supply the issuer, authorization/token endpoints and resource.
-4. Request `intervals:read offline_access` if scopes are editable. Refresh access may require reauthentication after the bounded grant expires.
+4. If scopes are editable, use base scope `intervals:read` and default scopes `intervals:read offline_access`. Leave OIDC disabled if offered. Review the risk notice and select **Create as a plugin**. Refresh access may require reauthentication after the bounded grant expires.
 5. Review the server consent page and sign into your configured GitHub account. The exact ChatGPT client metadata document and redirect are shown in its connection management page. A conforming current setup normally uses `https://chatgpt.com/oauth/client.json` and `https://chatgpt.com/connector_platform_oauth_redirect`; use the displayed values rather than copying an assumed callback.
 6. The GitHub app's callback is **your own `<origin>/callback`**, not ChatGPT's callback. The maintained provider validates the client's exact registered/published redirect.
-7. Install the plugin, enable the seven read-only tools, and ask for the athlete profile and latest three runs. Compare the results with Intervals before relying on analysis.
+7. Install/connect the plugin, review the seven read-only tools, and select it using `@` in a new **ChatGPT-mode** conversation. Ask for the athlete profile and latest three runs. Compare the results with Intervals before relying on analysis. A successful OAuth callback alone does not verify discovery or live retrieval.
 
 The [ChatGPT desktop app](https://learn.chatgpt.com/docs/extend/mcp) can show a STDIO/Streamable HTTP form without an OAuth selector. Choose **Streamable HTTP**, enter the URL, save/restart the connection and select **Authenticate**. Its native OAuth client can identify itself as **Codex** and return to a dynamically assigned `127.0.0.1` callback port. The provider checks that loopback callback against the published CIMD metadata; the GitHub app callback remains your server's `<origin>/callback`.
 

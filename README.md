@@ -4,6 +4,8 @@ A read-only [Model Context Protocol](https://modelcontextprotocol.io/) server th
 
 **Self-host one instance per owner.** Use your own Cloudflare account, Intervals API credentials, GitHub OAuth app and OAuth storage. Maintainers do not host a shared service or collect credentials. Existing COROS/other activity synchronization stays external.
 
+**Start here:** follow the [onboarding runbook](docs/onboarding-runbook.md) from account setup through a verified live ChatGPT connection, including common OAuth and tool-discovery fixes.
+
 ## Architecture
 
 ```mermaid
@@ -74,7 +76,7 @@ For account setup, configuration, updates and verification, follow the [self-hos
 
 ## Connect a client
 
-In **ChatGPT → Plugins → Add custom MCP server**, enter your deployed `https://<your-worker-origin>/mcp` and choose **OAuth/CIMD** if offered. Desktop forms use **Streamable HTTP**, then **Authenticate** after saving. Leave manual client credentials empty. Review consent, sign in with the configured GitHub account, enable the seven read tools, and compare the athlete profile/latest runs with Intervals. Menu placement may vary.
+For **ChatGPT mode**, register your deployed `https://<your-worker-origin>/mcp` in **ChatGPT → Plugins → Add custom MCP server** with **OAuth/CIMD**, then install/connect and select it with `@` in a new conversation. Leave manual client credentials empty. A native **Codex** connection or a plugin marked **desktop only** does not complete this ChatGPT registration. Follow the [connection and live verification steps](docs/onboarding-runbook.md#6-register-in-chatgpt-mode); menu placement may vary.
 
 Authentication uses authorization-code OAuth with S256 PKCE. Every tool request checks token audience, expiry, scope and owner. Access tokens last 15 minutes; refresh grants last 30 days.
 

@@ -2,6 +2,8 @@
 
 Every owner deploys independently. Your instance uses your Intervals API key/athlete ID, GitHub OAuth app and Cloudflare account. Repository maintainers never receive those credentials. There is no central sign-up or hosted service.
 
+For a single checklist from account setup to verified ChatGPT-mode access, start with the [onboarding runbook](onboarding-runbook.md). This guide provides the detailed configuration and maintenance reference.
+
 ## Guided v1 setup
 
 You do not need to change TypeScript source. The supported path uses a terminal and a local configuration wizard; it is not a one-click browser installation.
@@ -18,6 +20,8 @@ pnpm wrangler kv namespace create OAUTH_KV --update-config=false
 ```
 
 The namespace command creates a real cloud resource and can incur usage charges. Run it only when ready to provision your instance. Save the returned namespace ID; do not reuse another owner's namespace. `--update-config=false` keeps the shared repository configuration unchanged.
+
+The dashboard alternative is **Workers KV → Create KV namespace** (called **Create instance** in some versions). It creates the same resource; use either the dashboard or CLI path and copy the namespace ID for the wizard.
 
 6. In Cloudflare's Workers dashboard find your account's workers.dev subdomain. Choose a Worker name (default `intervals-icu-mcp`) and determine the intended origin. Alternatively use your own Workers custom domain. The eventual URL must match this origin exactly. The wizard accepts a URL you supply; it never invents one.
 7. In GitHub **Settings → Developer settings → OAuth Apps → New OAuth App**, create a production OAuth app you control. Use your intended public origin for its homepage and `<origin>/callback` for its authorization callback. Generate its secret locally. This app verifies your identity and does not read training data or repositories.
