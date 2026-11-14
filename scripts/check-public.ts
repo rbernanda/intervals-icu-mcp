@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
-import { readFile, stat } from 'node:fs/promises';
-import { publicationProblems } from './lib/publication';
+import { readFile, stat, lstat, readlink, realpath } from 'node:fs/promises';
+import { isAbsolute, relative } from 'node:path';
+import { publicationProblems, publicationSymlinkProblems } from './lib/publication';
 
 const requiredFiles = [
   'LICENSE',
@@ -25,11 +26,22 @@ if (paths.length === 0) {
 }
 const problems: string[] = [];
 for (const path of paths) {
-  const info = await stat(path);
+  const info = await lstat(path);
   if (info.size > 5_000_000) {
     problems.push(`${path}: unexpectedly large publication file`);
     continue;
   }
+  if (info.isSymbolicLink()) {
+    const target = await readlink(path);
+    problems.push(...publicationSymlinkProblems(path, target));
+    const resolved = relative(process.cwd(), await realpath(path));
+    if (isAbsolute(target) || resolved.startsWith('..') || isAbsolute(resolved)) {
+      problems.push(`${path}: symlink must resolve inside the repository using a relative target`);
+    }
+    problems.push(...publicationProblems(path, target));
+    continue;
+  }
+
   problems.push(...publicationProblems(path, await readFile(path, 'utf8')));
 }
 if (problems.length) {

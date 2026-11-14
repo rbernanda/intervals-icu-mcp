@@ -22,7 +22,8 @@
     "verify:runtime": "pnpm build && vitest run --config vitest.runtime.config.ts",
     "types:check": "wrangler types --strict-vars=false --check",
     "setup:deploy": "tsx scripts/setup-deploy.ts",
-    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm check:public",
+    "check": "pnpm typecheck && pnpm lint && pnpm check:skill && pnpm test && pnpm check:public",
+    "check:skill": "tsx scripts/check-skill.ts",
     "check:public": "tsx scripts/check-public.ts",
     "build:instance": "wrangler deploy --config wrangler.instance.jsonc --dry-run --outdir dist",
     "deploy:instance": "wrangler deploy --config wrangler.instance.jsonc",
@@ -47,7 +48,8 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
     "vitest": "^4.1.0",
-    "wrangler": "4.161.0"
+    "wrangler": "4.161.0",
+    "yaml": "2.9.1"
   },
   "description": "Read-only Intervals.icu remote MCP server: one self-hosted Cloudflare Worker per owner.",
   "license": "MIT",

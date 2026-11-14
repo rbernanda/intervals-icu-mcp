@@ -21,3 +21,13 @@ export function publicationProblems(path: string, contents: string): string[] {
   }
   return problems.map((problem) => `${path}: ${problem}`);
 }
+
+/** Only reviewed discovery links may bypass reading a regular publication file. */
+export function publicationSymlinkProblems(path: string, target: string): string[] {
+  return [
+    '.agents/skills/intervals-training-analyst',
+    '.claude/skills/intervals-training-analyst',
+  ].includes(path) && target === '../../skills/intervals-training-analyst'
+    ? []
+    : [`${path}: unsupported publication symlink; do not alias private or generated state`];
+}

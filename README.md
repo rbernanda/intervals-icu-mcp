@@ -82,6 +82,20 @@ Authentication uses authorization-code OAuth with S256 PKCE. Every tool request 
 
 Other clients can use CIMD or opt-in DCR (`OAUTH_ENABLE_DCR=true`). Registering a client never grants athlete access. Additional browser origins must be exact entries in `MCP_ALLOWED_ORIGINS`; wildcards are rejected. See [client compatibility and Inspector setup](docs/clients.md) for supported behavior and limitations.
 
+## AI Training Analyst Skill
+
+The optional [intervals-training-analyst skill](skills/intervals-training-analyst/SKILL.md) teaches an agent how to review workouts, weeks, performance trends and race preparation. The MCP server retrieves/validates data; the skill selects tools and interprets evidence with missing-data and physiological guardrails. It supports English and Indonesian.
+
+The canonical package is `skills/intervals-training-analyst/`. This checkout includes a repository-scoped `.agents/skills/intervals-training-analyst` symlink for Codex. Open Codex in this repository and invoke:
+
+```text
+$intervals-training-analyst Analyze my latest running activity.
+```
+
+You still need your own authenticated MCP connection; installing the skill does not deploy or authorize it. Other prompts include “Review my training over the last seven days,” “Compare my last five long runs,” “Is my aerobic efficiency improving?”, “Review my training readiness for an upcoming half marathon,” and “How have fitness and fatigue changed over the last six weeks?”
+
+The skill uses only read-only tools, treats source text as untrusted, and preserves unavailable metrics. It cannot diagnose conditions, prove drift from session averages or promise race times. See the [skill installation, testing and compatibility guide](docs/training-analyst-skill.md) for Claude Code setup, synthetic evaluations and verification limits.
+
 ## Tools
 
 | Tool                    | Inputs                                                      | Returns                                                               |

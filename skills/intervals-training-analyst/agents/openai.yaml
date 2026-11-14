@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Intervals Training Analyst'
+  short_description: 'Evidence-based reviews of your Intervals training'
+  default_prompt: 'Use $intervals-training-analyst to review my last seven days of Intervals.icu training using live data.'
+policy:
+  allow_implicit_invocation: true

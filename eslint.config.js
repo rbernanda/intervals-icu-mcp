@@ -20,6 +20,7 @@ export default tseslint.config(
       '.release/**',
       'worker-configuration.d.ts',
       'coverage/**',
+      'skills/intervals-training-analyst-workspace/**',
     ],
   },
   js.configs.recommended,
