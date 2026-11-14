@@ -4,7 +4,7 @@
 
 One repository release identifies server, scripts and canonical skill. `package.json`, `src/version.ts`, skill frontmatter `metadata.version` and the changelog must agree; `pnpm check:distribution` enforces this. Installed skill receipts record that version plus a deterministic content hash. Analytics' method identifier has a separate calculation-contract purpose and is not the application release version.
 
-**Existing public tags v1.0.0 and v1.1.0 must remain unchanged.** The requested “v1.0 portable-distribution” roadmap milestone is prepared as **1.2.0-rc.1**, the next additive release candidate. It is not a new first-ever v1.0.0 tag. Final version/tag publication requires owner approval; change all version identities together before a final release. This task does not publish or tag anything.
+**Existing public tags v1.0.0 and v1.1.0 must remain unchanged.** The requested “v1.0 portable-distribution” roadmap milestone uses **1.2.0**, the next additive stable release. It is not a new first-ever v1.0.0 tag. The earlier 1.2.0-rc.1 remains available as prerelease history. Never replace its tag. Future publication and production deployment require explicit owner authorization.
 
 Follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html): additive compatible functionality is minor, fixes are patch, incompatible public tool/configuration contracts require a major release and migration notes. Older skills can use stable data tools; newer skills disclose an analytics fallback for older seven-tool servers. Copies and running Workers update independently.
 

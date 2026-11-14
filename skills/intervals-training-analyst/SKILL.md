@@ -3,7 +3,7 @@ name: intervals-training-analyst
 description: Analyze an athlete's Intervals.icu data for endurance workout reviews, weekly training and load comparisons, fitness/fatigue/form trends, comparable historical runs, aerobic efficiency proxies, and race preparation. Use for explicit or implicit training-analysis requests grounded in this data, in English or Indonesian. Do not use for MCP/programming work or generic fitness questions without relevant athlete data.
 license: MIT
 metadata:
-  version: '1.2.0-rc.1'
+  version: '1.2.0'
 ---
 
 # Intervals Training Analyst

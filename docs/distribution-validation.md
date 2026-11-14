@@ -1,6 +1,6 @@
 # Portable distribution validation
 
-Candidate **1.2.0-rc.1**, reviewed **2026-11-14**. This is the portable-distribution milestone; previously published v1.0.0/v1.1.0 tags are not replaced. No production deployment, publication or remote push is part of this validation.
+Historical candidate **1.2.0-rc.1** validation, reviewed **2026-11-14**. The approved stable 1.2.0 promotion is recorded separately at the end of this document. This is the portable-distribution milestone; previously published v1.0.0/v1.1.0 tags are not replaced. No production deployment, publication or remote push is part of this validation.
 
 ## Evidence boundaries
 
@@ -50,3 +50,21 @@ The clean-source run caught two formatting issues and the pnpm built-in `doctor`
 No production deployment, external configuration changes, release/tag creation, push, marketplace or npm publication occurred. CI changes are locally exercised but have not run on GitHub until an approved push. GitHub branch protection, private reporting and secret-scanning settings were documented, not changed or independently verified. The Deploy to Cloudflare button remains deferred after documentation review because the complete owner OAuth setup was not executed through that flow.
 
 Explicit and implicit model skill activation, Claude/Cursor live OAuth, hosted ChatGPT skill packaging and a real-data weekly review remain unverified. These limits do not prevent review of the tested CLI distribution candidate. Recommendation: **READY FOR RELEASE REVIEW**, not “all clients/live deployment verified.”
+
+## Stable 1.2.0 promotion — 2026-11-14
+
+After explicit owner approval, the version was promoted to **1.2.0** and deployed to the existing owner-operated Cloudflare Worker. Credentials, OAuth settings and KV were preserved. No real athlete identity, source payload or deployment-specific configuration is included in this public evidence.
+
+- Stable `pnpm check`: PASS, **218 tests / 19 files**, TypeScript, ESLint/Prettier, skill/public/distribution checks.
+- Stable `pnpm verify:runtime`: PASS, **2 runtime tests**, dry-run build and synthetic Inspector/doctor flows.
+- Existing production configuration dry-run: PASS; required secret names verified without reading values.
+- Wrangler production deployment: PASS; actual HTTPS origin matched the configured origin.
+- Live unauthenticated MCP request: PASS, HTTP **401**.
+- Existing authenticated client discovery: PASS, server version **1.2.0**, all **10 tools**.
+- Live profile retrieval: PASS, expected owner identity/timezone validated without printing private fields.
+- Live recent-activity retrieval: PASS, validated structured response; no private payload printed.
+- Stable skill archive: PASS, extracted resource/manifest/content checks and SHA-256 file.
+
+The current conversation's registered connector exposes the earlier seven callable tools even though refreshed native discovery sees ten. An attempted direct native analytics RPC could not use this verifier's client context (JSON-RPC -32600); this was not an Intervals API or analytical tool result. No live analytical result is claimed. Refresh/reconnect the client before independently invoking the new tools. New browser OAuth, a hosted ChatGPT weekly review, Claude/Cursor live behavior and explicit/implicit model skill activation remain unverified. Existing synthetic analytic regressions pass unchanged.
+
+The earlier candidate's CI passed on Node.js 22 and 24. Stable commit CI and publication are verified separately by the release notes and GitHub run. Existing prerelease tags are retained as history; stable **v1.2.0** is a distinct release.

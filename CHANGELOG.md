@@ -2,9 +2,9 @@
 
 Repository releases use [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The historical v0.1/v0.2 names describe implementation milestones, not the already published repository tags. Published versions must not be replaced.
 
-## [1.2.0-rc.1] — Unreleased
+## [1.2.0] — 2026-11-14
 
-Portable-distribution milestone (originally called v1.0 in the roadmap). Candidate only: no tag, publication or production deployment is implied.
+Stable portable-distribution milestone (originally called v1.0 in the roadmap), promoted from v1.2.0-rc.1 without changing tool contracts or analytics methods.
 
 - Add a project-scoped portable skill installer for Codex, Claude Code and Cursor, with complete resource copies, version/checksum receipts, safe reruns and explicit managed updates.
 - Add privacy-conscious local and optional authenticated remote `doctor` checks, including identity, discovery, activity retrieval and deterministic comparison validation.

@@ -102,4 +102,4 @@ Never commit keys, filled-in environment files, instance configuration, tokens o
 
 [Upgrades, rollback and release checklist](docs/releases.md) · [Changelog](CHANGELOG.md) · [Troubleshooting](docs/troubleshooting.md) · [Validation evidence](docs/distribution-validation.md) · [Contributing](CONTRIBUTING.md) · [MIT License](LICENSE) · [Dependency notices](THIRD_PARTY_NOTICES.md).
 
-The portable-distribution milestone is prepared as **1.2.0-rc.1** because v1.0.0/v1.1.0 already exist. No existing tags are replaced. Production deployment, live client validation and release publication require separate approval/evidence.
+The portable-distribution milestone is released as **1.2.0** because v1.0.0/v1.1.0 already exist. No existing tags are replaced. See the dated validation evidence for deployment and client verification boundaries.
