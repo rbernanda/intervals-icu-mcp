@@ -10,6 +10,21 @@ Connect and authorize **your own** Intervals MCP instance in the agent that will
 
 ## Codex: repository-scoped installation
 
+For a separate project, use the portable copy installer from this checkout:
+
+```bash
+pnpm skill:install --agent codex --project ../my-training-project
+pnpm run doctor --agent codex --project ../my-training-project
+```
+
+Supported targets are `codex` (`.agents/skills`), `claude-code` (`.claude/skills`) and `cursor` (`.cursor/skills`). Supply an existing project path. The installer copies the entire canonical package including its MIT license and resources; it never edits MCP settings, connects accounts or installs globally. Copies remain usable after the original checkout is removed. No symlink behavior is required for these generated copies.
+
+The sibling `intervals-training-analyst.install.json` receipt records repository version and a deterministic SHA-256 of relative paths/content. Frontmatter `metadata.version` identifies the skill independently. Rerunning the same version is safe. For a reviewed update, run the same command with `--update`; replacement requires an unchanged managed installation. Unmanaged folders, modified files, orphan receipts and symlinked agent directories are refused. Back up/reconcile local edits yourself; there is no force-overwrite switch. Keep the receipt with the copy. Do not maintain installed copies as independent sources.
+
+Use [Codex](installation/codex.md), [Claude Code](installation/claude-code.md) or [Cursor](installation/cursor.md) for client setup/invocation. Installing multiple copies of the same skill in one project can cause duplicate-name conflicts; choose one target per actual host. Copy installation avoids undocumented symlink assumptions for Claude/Cursor. Existing canonical development links described below remain optional; no additional links are created by this task.
+
+For independent distribution, `pnpm pack:skill` prepares an ignored versioned archive and checksum, includes licensing and validates an extracted copy. It does not publish anything. See [release packaging](releases.md). Hosted ChatGPT plugin/skill packaging is distinct and remains unverified.
+
 This checkout contains the supported discovery symlink:
 
 ```text

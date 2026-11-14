@@ -13,6 +13,7 @@ import { join } from 'node:path';
 import { fixtureFetch } from '../fixtures/data';
 import { issueToken, memoryKv, testEnv } from '../helpers';
 import { pkceChallenge } from '../../src/auth/github';
+import { dotenvContents } from '../../scripts/lib/files';
 
 it('runs the production bundle in workerd and passes MCP Inspector discovery and invocation in both protocol eras', async () => {
   const memory = memoryKv();
@@ -248,6 +249,43 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
       },
     );
     expect(smoke.stdout).toContain('PASS: unauthorized rejection');
+
+    const doctorConfig = join(directory, 'doctor.vars');
+    await writeFile(
+      doctorConfig,
+      dotenvContents(
+        Object.fromEntries(
+          Object.entries(bindings).filter(
+            (entry): entry is [string, string] => typeof entry[1] === 'string',
+          ),
+        ),
+      ),
+      { mode: 0o600 },
+    );
+    const tokenFile = join(directory, 'doctor-token');
+    await writeFile(tokenFile, access_token, { mode: 0o600 });
+    const doctor = await promisify(execFile)(
+      process.execPath,
+      [
+        '--import',
+        'tsx',
+        'scripts/verify-setup.ts',
+        '--config',
+        doctorConfig,
+        '--url',
+        `${origin}/mcp`,
+        '--token-file',
+        tokenFile,
+      ],
+      {
+        timeout: 15000,
+        env: { ...process.env },
+      },
+    );
+    expect(doctor.stdout).toContain('PASS: authenticated_initialization');
+    expect(doctor.stdout).toContain('PASS: analytics');
+    expect(doctor.stdout).not.toMatch(/FAIL:|Test Runner|MUST-NOT-LEAK/);
+    expect(doctor.stdout).not.toContain(access_token);
     console.log(
       'Verified: workerd OAuth rejection, CIMD/S256 metadata, MCP Inspector legacy + modern discovery and authenticated tool calls (mock Intervals data).',
     );

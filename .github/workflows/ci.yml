@@ -42,3 +42,12 @@ jobs:
         run: pnpm types:portable
       - name: Build and verify workerd, MCP Inspector and smoke script
         run: pnpm verify:runtime
+      - name: Verify a fresh source installation and all project skill targets
+        if: matrix.node == '22'
+        run: pnpm test:fresh
+      - name: Build and validate portable skill artifact
+        if: matrix.node == '22'
+        run: pnpm pack:skill
+      - name: Check dependency vulnerabilities
+        if: matrix.node == '22'
+        run: pnpm audit --audit-level=high

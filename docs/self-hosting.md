@@ -76,7 +76,7 @@ Check each stage separately:
 2. **Access control:** a request to `<origin>/mcp` without a token returns 401 and a `WWW-Authenticate` challenge. OAuth metadata/preflight requests contain no athlete data.
 3. **Discovery:** inspect `/.well-known/oauth-protected-resource/mcp` and `/.well-known/oauth-authorization-server`. Resource, issuer and endpoint URLs must match your origin; S256 and CIMD must be advertised. Registration is advertised only when enabled.
 4. **Owner authorization:** use ChatGPT or a compatible MCP client. Review the client/domain/redirect host on the consent page and sign in with your configured GitHub account. Another identity must be denied.
-5. **Protocol:** discover exactly seven read-only tools; invoke `get_athlete_profile` and compare the ID/timezone with your source account.
+5. **Protocol:** discover exactly ten read-only tools; invoke `get_athlete_profile` and compare the ID/timezone with your source account.
 6. **Live data:** retrieve a recent run and compare ID, date, meters and duration with Intervals. Verify fitness CTL/ATL against the source. Missing metrics remain missing.
 7. **Smoke:** a legitimately authorized short-lived OAuth token can be supplied locally to `pnpm smoke` through `MCP_TOKEN_FILE` or `MCP_ACCESS_TOKEN`. Set `MCP_URL` to the actual endpoint. Avoid command arguments/history and never send the token to maintainers. The script prints check results without athlete payloads.
 
@@ -107,3 +107,9 @@ OAuth client registrations remain stable while clients reuse their IDs. Access t
 | `UPSTREAM_TIMEOUT_MS`    | Optional | Instance config         | 100–20000 ms per attempt, default 10000; total tool budget 25 seconds     |
 
 The versioned base config marks required settings as secret bindings so direct Wrangler setups also fail closed. The generated instance config puts public values in `vars` and requires only the three true credential bindings through Secrets. Both routes use identical runtime validation.
+
+## Deploy to Cloudflare evaluation
+
+The current [official button workflow](https://developers.cloudflare.com/workers/platform/deploy-buttons/) can fork public repositories, provision supported bindings and prompt for secrets from example files. This repository's public template and runtime validation fail closed until mandatory settings exist. However, an owner's GitHub OAuth app, numeric allowlist, final public origin/callback and private credentials still need coordination outside that button.
+
+No button flow has been executed for this candidate, and it cannot be declared an end-to-end private setup from documentation alone. The README therefore keeps Wrangler CLI as the supported path rather than advertising an unverified one-click installation. Do not bypass authentication or accept placeholder credentials to make a button deployment appear successful. Browser-assisted deployment remains deferred, not required for the portable CLI release.

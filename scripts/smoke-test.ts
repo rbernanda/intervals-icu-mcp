@@ -2,6 +2,7 @@ import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/cli
 import { readFile } from 'node:fs/promises';
 import { z } from 'zod';
 import { outputs } from '../src/tools/contracts';
+import { VERSION } from '../src/version';
 const url = new URL(process.env.MCP_URL ?? 'http://localhost:8787/mcp');
 if (
   url.pathname !== '/mcp' ||
@@ -29,7 +30,7 @@ const unauthorized = await fetch(url, {
 if (unauthorized.status !== 401) {
   throw new Error(`Unauthenticated endpoint returned ${unauthorized.status}; expected 401.`);
 }
-const client = new Client({ name: 'intervals-smoke-test', version: '1.0.0' });
+const client = new Client({ name: 'intervals-smoke-test', version: VERSION });
 try {
   await client.connect(
     new StreamableHTTPClientTransport(url, {

@@ -12,6 +12,8 @@ pnpm types:check
 pnpm check
 pnpm types:portable
 pnpm verify:runtime
+pnpm test:fresh
+pnpm check:distribution
 ```
 
 No Intervals, GitHub or Cloudflare credentials are needed for these checks. `verify:runtime` builds the Worker locally and invokes the official MCP Inspector and smoke script using isolated, synthetic data. It starts loopback listeners and does not deploy.
@@ -42,6 +44,10 @@ Do not add multi-user tenancy, centralized credential collection, a hosted SaaS 
 7. Update the lockfile when dependencies change. Consult primary documentation before SDK/API changes; keep Inspector checks working in both supported protocol eras.
 
 CI runs on pushes and pull requests with a read-only GitHub token and no application secrets. It never deploys. Fork contributions must use the `pull_request` event, never execute untrusted code through `pull_request_target`.
+
+Distribution scripts use project-scoped generated skill copies, version/hash receipts and explicit updates. Keep the canonical skill portable and preserve refusal to overwrite edited/unmanaged files. Tests must distinguish file/resource validation from actual client discovery/activation. `doctor` remains offline by default and must not print credentials, private records or raw upstream errors.
+
+The [release checklist](docs/releases.md) defines one repository-level version, packaging, compatibility evidence, dependency-license review and rollback. Do not reuse the existing v1.0.0/v1.1.0 tags. Security scanning settings and production resources require separate owner action; no workflow receives deployment credentials.
 
 ## Security and releases
 

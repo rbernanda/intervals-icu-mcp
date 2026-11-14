@@ -11,6 +11,7 @@ export const skillMetadataSchema = z
     name: z.literal(SKILL_NAME),
     description: z.string().trim().min(1).max(1024),
     license: z.literal('MIT'),
+    metadata: z.object({ version: z.string() }).strict().optional(),
   })
   .strict();
 
@@ -49,8 +50,7 @@ async function packageFiles(root: string, directory = root): Promise<string[]> {
 }
 
 /** Validates relocatable resources and discovery without requiring a client, network or credentials. */
-export async function validateSkillPackage(repositoryRoot: string): Promise<string[]> {
-  const canonical = resolve(repositoryRoot, 'skills', SKILL_NAME);
+export async function validateSkillDirectory(canonical: string): Promise<string[]> {
   if ((await lstat(canonical)).isSymbolicLink()) {
     throw new Error('The canonical skill folder must not be a symlink.');
   }
@@ -62,6 +62,7 @@ export async function validateSkillPackage(repositoryRoot: string): Promise<stri
 
   const required = [
     'SKILL.md',
+    'LICENSE',
     'agents/openai.yaml',
     ...[
       'metric-definitions',
@@ -81,7 +82,7 @@ export async function validateSkillPackage(repositoryRoot: string): Promise<stri
 
   for (const file of files) {
     const content = await readFile(file, 'utf8');
-    const problems = publicationProblems(relative(repositoryRoot, file), content);
+    const problems = publicationProblems(relative(root, file), content);
     if (problems.length) {
       throw new Error(problems.join('\n'));
     }
@@ -120,11 +121,6 @@ export async function validateSkillPackage(repositoryRoot: string): Promise<stri
     }
   }
 
-  const discovery = resolve(repositoryRoot, '.agents/skills', SKILL_NAME);
-  if ((await realpath(discovery)) !== (await realpath(root))) {
-    throw new Error('Codex discovery must resolve to the canonical skill.');
-  }
-
   const metadata = parseDocument(await readFile(resolve(root, 'agents/openai.yaml'), 'utf8'));
   if (metadata.errors.length) {
     throw new Error('Invalid Codex UI metadata.');
@@ -140,4 +136,15 @@ export async function validateSkillPackage(repositoryRoot: string): Promise<stri
   }).parse(metadata.toJS() as unknown);
 
   return files.map((file) => relative(root, file)).sort();
+}
+
+/** Repository development uses one editable source; installed distributions are validated separately. */
+export async function validateSkillPackage(repositoryRoot: string): Promise<string[]> {
+  const canonical = resolve(repositoryRoot, 'skills', SKILL_NAME);
+  const files = await validateSkillDirectory(canonical);
+  const discovery = resolve(repositoryRoot, '.agents/skills', SKILL_NAME);
+  if ((await realpath(discovery)) !== (await realpath(canonical))) {
+    throw new Error('Codex discovery must resolve to the canonical skill.');
+  }
+  return files;
 }

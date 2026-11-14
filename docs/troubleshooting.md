@@ -1,0 +1,24 @@
+# Troubleshooting
+
+Start with `pnpm run doctor`, then [endpoint checks](diagnostics.md) or the [onboarding runbook](onboarding-runbook.md). Share only fixed check names, statuses and safe error categories, never credentials, athlete/wellness payloads or OAuth URLs containing codes.
+
+| Symptom                                     | Action                                                                                                                                                                                       |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unconfigured Worker returns 503             | Supply all required settings and three Workers Secrets; confirm the OAuth KV binding. This is a fail-closed result.                                                                          |
+| Invalid Intervals key / 401 or 403 upstream | Regenerate/check the personal key in Intervals Settings; rotate `INTERVALS_API_KEY` through Wrangler's prompt. Do not retry credential failures indefinitely.                                |
+| Wrong athlete / 404                         | Confirm `INTERVALS_ATHLETE_ID` belongs to the key; `0` selects its owner. A numeric or `i`-prefixed ID is supported. Wrong identities must stop analysis.                                    |
+| No activities                               | Verify synchronization in Intervals, inclusive local dates and sport filter. Empty retrieval does not prove no training occurred.                                                            |
+| Missing HRV, resting HR, sleep or load      | Recordings/integrations may not provide them. Preserve null/missing counts; do not substitute zero or a recovery conclusion.                                                                 |
+| OAuth unauthorized, expired or forbidden    | Reconnect through client OAuth. Verify numeric owner ID, origin, audience, scope, PKCE and exact callbacks. GitHub app callback is `<origin>/callback`, distinct from the client's callback. |
+| 403 on consent in an older installation     | Update the Worker and restart sign-in. Never accept wildcard/null consent POST Origins. See [client authorization details](clients.md).                                                      |
+| Claude/Cursor registration fails            | Check whether that version supports CIMD. If necessary explicitly enable server DCR and redeploy. Registration never authorizes access by itself.                                            |
+| ChatGPT tools absent                        | Register/install/select the plugin in ChatGPT mode and start a new conversation. Codex connection and local skill discovery are separate. Check workspace policy and actual endpoint.        |
+| Only seven tools discovered                 | Deployed Worker predates analytics. Update it explicitly and refresh/reconnect the client. Installing a newer skill does not update a server.                                                |
+| Skill not visible                           | Confirm selected agent path and project, trust settings and duplicate-name overrides; restart the client. Run installer and doctor against that project.                                     |
+| Installer refuses replacement               | It protects unmanaged or locally edited files. Back up/reconcile them yourself. `--update` only replaces an unchanged managed installation.                                                  |
+| 429 / Retry-After                           | Wait for the upstream limit to clear and reduce repeated requests. The client already bounds retries; there is no guaranteed published numeric quota.                                        |
+| Unexpected source response                  | Update from a reviewed release, run checks, report a synthetic reproduction/error category. Do not share raw athlete exports.                                                                |
+| Wrangler deployment fails                   | Confirm your own account permissions, KV namespace, correct `--config wrangler.instance.jsonc`, Node/pnpm versions and secrets. Run `pnpm build:instance` before deployment.                 |
+| Doctor cannot use a client token            | Use normal client authorization and in-chat verification; no safe token-export method is promised for every host. Doctor never reads client credential stores.                               |
+
+See [configuration](self-hosting.md#configuration-reference), [upgrade/rollback](releases.md) and [security reporting](../SECURITY.md). Cloudflare account or GitHub account compromise requires owner-side credential/grant rotation; maintainers cannot recover your credentials.

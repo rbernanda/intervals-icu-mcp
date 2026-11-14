@@ -1,0 +1,19 @@
+name: Bug report
+description: Report a reproducible problem using synthetic data only
+body:
+  - type: markdown
+    attributes:
+      value: Never include keys, tokens, private activity/wellness data, or authorization URLs. Report security issues privately according to SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit and client/version
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps, expected result, actual result and safe error category
+      description: Use synthetic records and redacted diagnostics. Include timezone and tool arguments only when they contain no private data.
+    validations:
+      required: true

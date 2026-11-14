@@ -35,7 +35,7 @@ describe('distributable training analyst skill', () => {
   });
 
   it('validates YAML, portable links, templates and canonical Codex symlink', async () => {
-    expect(await validateSkillPackage(process.cwd())).toHaveLength(10);
+    expect(await validateSkillPackage(process.cwd())).toHaveLength(11);
   });
 
   it.each([
@@ -54,7 +54,7 @@ describe('distributable training analyst skill', () => {
       await mkdir(join(root, '.agents/skills'), { recursive: true });
       await cp(join(process.cwd(), 'skills', SKILL_NAME), canonical, { recursive: true });
       await symlink(`../../skills/${SKILL_NAME}`, join(root, '.agents/skills', SKILL_NAME));
-      expect(await validateSkillPackage(root)).toHaveLength(10);
+      expect(await validateSkillPackage(root)).toHaveLength(11);
       await rm(join(canonical, 'assets/templates/weekly-review.md'));
       await expect(validateSkillPackage(root)).rejects.toThrow('Missing skill resource');
     } finally {

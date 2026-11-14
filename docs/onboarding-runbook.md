@@ -108,7 +108,7 @@ Use the [ChatGPT Plugins page](https://chatgpt.com/plugins), even if the server 
 4. Select **OAuth**. In **Advanced OAuth settings**, use discovered endpoints and **CIMD** if a client setup selector appears. Do not supply manual client credentials.
 5. If scopes are editable, use base scope `intervals:read` and default scopes `intervals:read offline_access`. This server does not use OIDC; leave it disabled if offered.
 6. Review the warning, check **I understand and want to continue**, then select **Create as a plugin**.
-7. Complete the connection's authorization flow when prompted: review your Worker's client/redirect details, allow the read scope, and sign in to GitHub as the configured owner. Install/connect the resulting plugin and review the seven read-only tools.
+7. Complete the connection's authorization flow when prompted: review your Worker's client/redirect details, allow the read scope, and sign in to GitHub as the configured owner. Install/connect the resulting plugin and review the ten read-only tools.
 8. Start a **new conversation in ChatGPT mode**. Type `@` and select the newly registered plugin. For a project, select it in the intended project conversation too.
 
 No API key, athlete ID or GitHub client secret is entered into ChatGPT. The Worker holds those values. Native Codex may instead show a URL/transport form followed by **Authenticate**; completing that flow is a separate client authorization, not proof that ChatGPT mode is connected.
@@ -127,7 +127,7 @@ Then send:
 
 > Retrieve my latest three running activities using get_recent_activities with limit=3 and sport_type="running". Show source IDs, dates, distance in meters and moving time in seconds. Preserve missing values and do not use cached or remembered activity data.
 
-Compare one returned run with Intervals.icu. Also check that discovery lists all seven tools documented in the [README](../README.md#tools).
+Compare one returned run with Intervals.icu. Also check that discovery lists all ten tools documented in the [README](../README.md#tools).
 
 Record each acceptance check separately, without saving private payloads or tokens in Git:
 

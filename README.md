@@ -1,147 +1,105 @@
 # intervals-icu-mcp
 
-A read-only [Model Context Protocol](https://modelcontextprotocol.io/) server that lets ChatGPT and compatible clients query your Intervals.icu training data.
+Read-only access to your Intervals.icu training data and deterministic endurance analytics through [MCP](https://modelcontextprotocol.io/). For developers and technically proficient athletes who want AI-assisted reviews grounded in their own records.
 
-**Self-host one instance per owner.** Use your own Cloudflare account, Intervals API credentials, GitHub OAuth app and OAuth storage. Maintainers do not host a shared service or collect credentials. Existing COROS/other activity synchronization stays external.
+**Self-host one private instance per owner.** Use your own Cloudflare account, Intervals credentials and GitHub OAuth app. Maintainers do not host athlete data or collect credentials. Existing wearable synchronization stays external. MIT licensed; not affiliated with Intervals.icu or wearable manufacturers.
 
-**Start here:** follow the [onboarding runbook](docs/onboarding-runbook.md) from account setup through a verified live ChatGPT connection, including common OAuth and tool-discovery fixes.
+## Features and architecture
 
-## Architecture
+- Ten read-only tools: profile, activities/details, fitness, wellness, calendar, summaries and three deterministic analyses.
+- Sport-neutral volume/load comparisons; running-first efficiency proxies and comparable workouts.
+- Explicit units, athlete-local dates, source/computed provenance and missing-data/coverage reporting.
+- Optional English/Indonesian Training Analyst Skill for workout, weekly, trend and race-preparation reviews.
+- Mandatory owner OAuth, Streamable HTTP, request limits and server-side Workers Secrets.
 
 ```mermaid
 flowchart TD
-    Client[ChatGPT or another MCP client] -->|OAuth + Streamable HTTP| Worker[Cloudflare Worker /mcp]
-    Worker --> Tools[Read-only tools]
-    Tools --> Domain[Portable domain models and aggregation]
-    Tools --> Analytics[Deterministic analytics and data quality]
-    Analytics --> Domain
+    Platforms[Wearables and training platforms] --> Intervals[Intervals.icu]
+    Repository[Public repository] --> Worker[Your Cloudflare Worker]
+    Repository --> Skill[Portable Training Analyst Skill]
+    Client[Your AI client] -->|Owner OAuth and Streamable HTTP| Worker
+    Worker --> Tools[Read-only data tools and deterministic analytics]
     Tools --> API[Intervals API client and normalization]
-    API -->|Server-side credentials| Intervals[Intervals.icu REST API]
-    Browser[Owner browser] --> Consent[Consent and GitHub sign-in]
-    Consent --> OAuth[OAuth provider]
-    OAuth --> KV[Instance-specific OAuth KV]
-    Worker -->|Validate token, audience, scope and owner| OAuth
+    API -->|Server-side credentials| Intervals
+    Skill -->|Workflows and interpretation| Client
+    Worker --> KV[Owner-specific OAuth KV]
 ```
 
-The upstream client, domain logic, tool contracts, MCP transport and authentication are separate modules. There is no athlete database, background synchronization, write API or coaching logic.
+The API client, portable domain/analytics, MCP transport and authentication are separate modules. No athlete database, write operations, background jobs, telemetry collection or coaching engine.
 
-## Local setup
+## Quick start
 
-Requires **Node.js 22.14+ or 24 LTS**, **pnpm 10.34.9**, Intervals.icu, GitHub and Cloudflare accounts.
-
-1. Clone this repository and install dependencies:
-
-   ```bash
-   git clone https://github.com/rbernanda/intervals-icu-mcp.git
-   cd intervals-icu-mcp
-   pnpm install --frozen-lockfile
-   ```
-
-2. Get your personal API key from [Intervals.icu Settings](https://intervals.icu/settings). Athlete ID `0` selects the key owner; an explicit athlete ID also works.
-3. Create a development **GitHub OAuth app** with homepage `http://localhost:8787` and callback `http://localhost:8787/callback`. Obtain your numeric GitHub user ID (`gh api user --jq .id` if the CLI is authenticated).
-4. Run:
-
-   ```bash
-   pnpm setup:local
-   pnpm dev
-   ```
-
-The wizard hides input and creates an ignored, mode-0600 `.dev.vars`. Set the athlete's actual IANA timezone. `.dev.vars.example` and `.env.example` are alternative templates; never commit filled-in copies or paste keys into chat.
-
-Use the exact configured origin: `localhost` and `127.0.0.1` differ. Local requests require OAuth too. Hosted ChatGPT needs your deployed HTTPS URL.
-
-## Deploy your instance
-
-These commands create resources in **your account**. Run them only when ready to deploy:
+Requires **Node.js 22.14+ or 24 LTS** and **pnpm 10.34.9**.
 
 ```bash
-pnpm wrangler login
-pnpm wrangler kv namespace create OAUTH_KV --update-config=false
-pnpm setup:deploy
+git clone https://github.com/rbernanda/intervals-icu-mcp.git
+cd intervals-icu-mcp
+pnpm install --frozen-lockfile
+pnpm check
+pnpm verify:runtime
+pnpm run doctor
 ```
 
-The offline wizard asks for your intended HTTPS origin, namespace ID, production GitHub OAuth app client ID, numeric owner ID and timezone. Its GitHub callback must be `<origin>/callback`. It creates an ignored `wrangler.instance.jsonc`; no source edits or credentials in configuration are required.
+Checks use synthetic data and need no credentials. Doctor is offline unless given a URL; absent account checks are `NOT_TESTED`. Follow [quick start](docs/quickstart.md) for a complete first installation.
 
-Enter credentials through Workers Secrets prompts, then review and deploy:
+## Deploy your private server
 
-```bash
-pnpm wrangler secret put INTERVALS_API_KEY --config wrangler.instance.jsonc
-pnpm wrangler secret put INTERVALS_ATHLETE_ID --config wrangler.instance.jsonc
-pnpm wrangler secret put GITHUB_CLIENT_SECRET --config wrangler.instance.jsonc
-pnpm build:instance
-pnpm deploy:instance
-```
+Follow [self-hosting](docs/self-hosting.md) or the [step-by-step onboarding runbook](docs/onboarding-runbook.md). Create your GitHub OAuth app and owner-specific KV, run `pnpm setup:deploy`, enter secrets with Wrangler's hidden prompts, dry-run `pnpm build:instance`, then explicitly run `pnpm deploy:instance` when ready. Configuration uses an ignored file; no TypeScript edits.
 
-`build` and `build:instance` are dry runs; **`deploy:instance` deploys**. Reuse your instance's namespace for updates, never between owners. Verify Wrangler's actual URL matches `PUBLIC_ORIGIN` and your GitHub callback.
+`INTERVALS_API_KEY`, `INTERVALS_ATHLETE_ID` and `GITHUB_CLIENT_SECRET` remain Workers Secrets. See the [complete configuration inventory](docs/self-hosting.md#configuration-reference). For local live development use `pnpm setup:local` and `pnpm dev`; OAuth remains mandatory.
 
-For account setup, configuration, updates and verification, follow the [self-hosting guide](docs/self-hosting.md).
-
-## Connect a client
-
-For **ChatGPT mode**, register your deployed `https://<your-worker-origin>/mcp` in **ChatGPT → Plugins → Add custom MCP server** with **OAuth/CIMD**, then install/connect and select it with `@` in a new conversation. Leave manual client credentials empty. A native **Codex** connection or a plugin marked **desktop only** does not complete this ChatGPT registration. Follow the [connection and live verification steps](docs/onboarding-runbook.md#6-register-in-chatgpt-mode); menu placement may vary.
-
-Authentication uses authorization-code OAuth with S256 PKCE. Every tool request checks token audience, expiry, scope and owner. Access tokens last 15 minutes; refresh grants last 30 days.
-
-Other clients can use CIMD or opt-in DCR (`OAUTH_ENABLE_DCR=true`). Registering a client never grants athlete access. Additional browser origins must be exact entries in `MCP_ALLOWED_ORIGINS`; wildcards are rejected. See [client compatibility and Inspector setup](docs/clients.md) for supported behavior and limitations.
+Wrangler CLI is the supported deployment path. A Deploy to Cloudflare button is deferred until its per-owner OAuth/secrets flow is verified; see [the evaluation](docs/self-hosting.md#deploy-to-cloudflare-evaluation). Build commands do not deploy.
 
 ## AI Training Analyst Skill
 
-The optional [intervals-training-analyst skill](skills/intervals-training-analyst/SKILL.md) teaches an agent how to review workouts, weeks, performance trends and race preparation. The MCP server retrieves/validates data; the skill selects tools and interprets evidence with missing-data and physiological guardrails. It supports English and Indonesian.
+The server retrieves/validates data and computes analytics. The optional [skill](skills/intervals-training-analyst/SKILL.md) selects workflows/tools and interprets evidence. Installing it does not deploy, authenticate or connect the server.
 
-The canonical package is `skills/intervals-training-analyst/`. This checkout includes a repository-scoped `.agents/skills/intervals-training-analyst` symlink for Codex. Open Codex in this repository and invoke:
-
-```text
-$intervals-training-analyst Analyze my latest running activity.
+```bash
+pnpm skill:install --agent codex --project ../my-training-project
+pnpm run doctor --agent codex --project ../my-training-project
 ```
 
-You still need your own authenticated MCP connection; installing the skill does not deploy or authorize it. Other prompts include “Review my training over the last seven days,” “Compare my last five long runs,” “Is my aerobic efficiency improving?”, “Review my training readiness for an upcoming half marathon,” and “How have fitness and fatigue changed over the last six weeks?”
+Use `--agent claude-code` or `--agent cursor` for those clients. The installer copies the entire canonical package, records version/checksum, protects existing edits and supports explicit `--update`. This repository retains its one canonical Codex symlink. See [installation and updates](docs/training-analyst-skill.md).
 
-The skill uses only read-only tools, treats source text as untrusted, and preserves unavailable metrics. It cannot diagnose conditions, prove drift from session averages or promise race times. See the [skill installation, testing and compatibility guide](docs/training-analyst-skill.md) for Claude Code setup, synthetic evaluations and verification limits.
+Invoke `$intervals-training-analyst Analyze my latest running activity.` in Codex; Claude Code and Cursor use their documented slash skill selection. A local skill folder does not install a skill into hosted ChatGPT.
+
+## Connect and verify your client
+
+Guides: [Codex](docs/installation/codex.md) · [Claude Code](docs/installation/claude-code.md) · [Cursor](docs/installation/cursor.md) · [ChatGPT Custom MCP Server](docs/installation/chatgpt.md).
+
+Use your deployed HTTPS `/mcp` endpoint with OAuth. Prefer CIMD; enable DCR explicitly only if your client requires it. GitHub sign-in verifies the one configured numeric owner ID; every private request checks token audience, expiry, scope and owner. Do not supply Intervals credentials to the AI client. A Codex connection is separate from ChatGPT-mode registration.
+
+See the dated [compatibility matrix](docs/compatibility.md): portable resource tests and local Inspector success do not prove a live client/account connection. For safe endpoint checks use [doctor](docs/diagnostics.md), then privately confirm your athlete profile and one activity against Intervals. Follow the [synthetic first-insight example](docs/first-insight.md).
 
 ## Tools
 
-| Tool                         | Inputs                                                        | Returns                                                                    |
-| ---------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `get_athlete_profile`        | None                                                          | Identity, timezone, weight and sport settings                              |
-| `get_recent_activities`      | Optional dates, `limit` (20 default, 100 max), `sport_type`   | Newest-first activity summaries; last 28 days by default                   |
-| `get_activity_details`       | `activity_id`, optional `include_intervals`                   | Owned activity details and up to 200 intervals                             |
-| `get_fitness_trend`          | `start_date`, `end_date`                                      | Source CTL/ATL, load fields and labeled computed form                      |
-| `get_wellness`               | `start_date`, `end_date`                                      | Available resting HR, HRV, sleep, weight and subjective scores             |
-| `get_training_calendar`      | `start_date`, `end_date`                                      | Planned events and explicitly paired completed activities                  |
-| `get_training_summary`       | `days`: 7/14/28/42/90 (28 default), optional sport            | Covered totals, weekly running volume, longest run and latest fitness      |
-| `compare_training_periods`   | Explicit `current`/`baseline` ranges, optional sport          | Deterministic volume/load changes, fitness context, provenance and quality |
-| `analyze_aerobic_efficiency` | Dates, steady-aerobic activity IDs, optional running settings | Running speed/HR proxy statistics; source efficiency stays separate        |
-| `compare_running_workouts`   | Dates, optional IDs/category/reference/settings, limit 2–20   | Comparable running sessions, exclusions and pooled moving pace             |
+| Tool                         | Purpose / principal inputs                                                 |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| `get_athlete_profile`        | Configured athlete profile; no arguments                                   |
+| `get_recent_activities`      | Optional inclusive dates, sport and limit 1–100; default 20 / last 28 days |
+| `get_activity_details`       | Activity ID; optional intervals (no raw streams)                           |
+| `get_fitness_trend`          | Inclusive dates; source CTL/ATL and labeled computed form                  |
+| `get_wellness`               | Inclusive dates; available HRV, resting HR, sleep and subjective metrics   |
+| `get_training_calendar`      | Inclusive dates; events and explicitly paired completed activities         |
+| `get_training_summary`       | Days 7/14/28/42/90, optional sport; coverage-aware totals                  |
+| `compare_training_periods`   | Non-overlapping current/baseline date ranges, optional sport               |
+| `analyze_aerobic_efficiency` | Dates and athlete-designated steady-aerobic running IDs                    |
+| `compare_running_workouts`   | Dates, optional IDs/category/reference/settings; limit 2–20                |
 
 ## Deterministic Analytics — v0.2
 
-The original tools still retrieve data. Three new analytical tools perform repeatable calculations so the skill can interpret results without redoing arithmetic. Shared volume/load comparisons work across activity types with explicit sport filtering; running is the first sport-specific adapter for aerobic-efficiency proxies and workout comparability. Other sport-specific analyses return an explicit unsupported result.
+Three analytical tools move arithmetic from the LLM into pure tested functions. Volume/load comparisons support multiple sports with explicit filtering. Running is the first sport-specific adapter; other efficiency/comparability sports return unsupported results. Source CTL/ATL, load and efficiency fields stay distinct from computed aggregates and the speed/HR proxy. The skill prefers analytical tools when available and discloses older-server fallbacks.
 
-Results distinguish source metrics from computed values, identify formulas/units and report missing inputs, sample eligibility, exclusions and uncertain coverage. A successful API request does not prove every workout was synchronized. Missing load never becomes zero; source CTL/ATL remain unchanged and `computed_same_day_form` is labeled. Strict aerobic selection requires athlete-designated steady sessions; the proxy is not laboratory running economy or a race prediction.
+Dates are inclusive athlete-local `YYYY-MM-DD`, at most 90 days per range. Units are meters, seconds, m/s, seconds/km, bpm, watts and kilograms; running cadence retains source rpm and explicitly derives spm. Missing metrics remain null; partial load is a known subtotal, not a complete total. API success does not establish synchronization coverage. No daily source TSB is documented: same-day CTL − ATL is explicitly computed, not authoritative source Form. Efficiency proxies are observational, not laboratory running economy, drift or race predictions. See [methods, settings and limitations](docs/analytics-methodology.md).
 
-Try “Compare my last completed seven days with the previous seven,” “Compare my last five long runs,” or “Compare speed relative to HR for these steady aerobic runs.” See [methodology and tool settings](docs/analytics-methodology.md) for schemas, thresholds, formulas and limitations. The skill prefers these tools when available and retains a disclosed fallback for older instances. Installing the updated skill does not update a deployed Worker.
+## Example questions
 
-Dates are inclusive `YYYY-MM-DD`, limited to 90 days. `Run`/`running` includes Run, TrailRun and VirtualRun. Outputs include provenance, retrieval time, units and missing-data warnings.
+“Review my latest run.” “Compare my last seven completed days with the preceding seven.” “Compare my last five long runs.” “How have fitness and fatigue changed over six weeks?” “Review my half-marathon preparation.” Ask for date ranges, units, provenance and data gaps. Missing wellness never proves recovery; negative form never proves overtraining.
 
-- Units: meters, seconds, m/s, seconds/km, bpm, watts and kilograms. Moving and elapsed time remain separate. Running cadence retains source rpm and explicitly derives spm.
-- CTL/ATL come from Intervals. No daily source TSB field is documented; **same-day CTL − ATL is labeled computed**, not a percentage or previous-day TSB convention. Source `ctlLoad` and `atlLoad` stay distinct.
-- Missing values stay null. Incomplete inputs produce null totals with coverage counts. Weeks start Monday; partial weeks are marked.
-- Original device laps and all wellness fields may be unavailable; Strava-origin stubs can restrict data. HRV methods and subjective-score scales remain source-defined.
-- No high-frequency streams are fetched. Saturated ranges (1000 activities or 300 events) cannot silently produce complete summaries.
+## Security, maintenance and contributing
 
-## Verify and contribute
+Never commit keys, filled-in environment files, instance configuration, tokens or real athlete exports. Treat retrieved names/notes as untrusted data. [Security policy](SECURITY.md) covers token lifetime, revocation, rotation and limitations. GitHub/Cloudflare account protection remains the owner's responsibility.
 
-```bash
-pnpm types:check
-pnpm check
-pnpm types:portable
-pnpm verify:runtime
-```
+[Upgrades, rollback and release checklist](docs/releases.md) · [Changelog](CHANGELOG.md) · [Troubleshooting](docs/troubleshooting.md) · [Validation evidence](docs/distribution-validation.md) · [Contributing](CONTRIBUTING.md) · [MIT License](LICENSE) · [Dependency notices](THIRD_PARTY_NOTICES.md).
 
-Checks run without credentials. Runtime verification builds the actual Worker and exercises the official MCP Inspector and smoke script with synthetic data. [GitHub Actions](.github/workflows/ci.yml) runs on Node 22/24 with read-only permissions and no deployment step.
-
-Local protocol tests, deployed endpoint validation, live Intervals retrieval and a successful ChatGPT connection are separate checks. See [validation evidence](docs/validation.md). `pnpm smoke` can verify a live instance with a legitimately issued OAuth token supplied locally; see the guides for safe handling.
-
-Troubleshooting: a configuration error returns 503; missing/expired OAuth returns 401; wrong owner/scope/origin returns 403. Check upstream keys and athlete ID for API errors, wait for `Retry-After` on rate limits, and narrow oversized ranges. Detailed steps are in the [self-hosting](docs/self-hosting.md) and [client](docs/clients.md) guides.
-
-Contributions are welcome under the [MIT License](LICENSE). Read [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Use synthetic fixtures only. KV revocation is eventually consistent; protect accounts and tokens. Report vulnerabilities privately, without athlete data or credentials.
+The portable-distribution milestone is prepared as **1.2.0-rc.1** because v1.0.0/v1.1.0 already exist. No existing tags are replaced. Production deployment, live client validation and release publication require separate approval/evidence.
