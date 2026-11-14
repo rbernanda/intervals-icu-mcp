@@ -25,7 +25,9 @@ Current [OpenAI authentication documentation](https://developers.openai.com/plug
 6. The GitHub app's callback is **your own `<origin>/callback`**, not ChatGPT's callback. The maintained provider validates the client's exact registered/published redirect.
 7. Install the plugin, enable the seven read-only tools, and ask for the athlete profile and latest three runs. Compare the results with Intervals before relying on analysis.
 
-The host normally makes server-to-server requests without Origin. If your client sends a browser Origin, add that exact origin to `MCP_ALLOWED_ORIGINS`. Never use `*`.
+The [ChatGPT desktop app](https://learn.chatgpt.com/docs/extend/mcp) can show a STDIO/Streamable HTTP form without an OAuth selector. Choose **Streamable HTTP**, enter the URL, save/restart the connection and select **Authenticate**. Its native OAuth client can identify itself as **Codex** and return to a dynamically assigned `127.0.0.1` callback port. The provider checks that loopback callback against the published CIMD metadata; the GitHub app callback remains your server's `<origin>/callback`.
+
+The host normally makes MCP requests without Origin. If it sends a browser Origin to `/mcp`, add that exact origin to `MCP_ALLOWED_ORIGINS`. Never use `*`. Browser GET navigation to `/authorize` and `/callback` does not require a CORS entry; consent POSTs remain same-origin and callbacks require browser-bound state. A 403 before the consent page on an older deployment can be an overbroad Origin check; update to the current code and restart sign-in rather than adding wildcard origins.
 
 ## MCP Inspector and other clients
 

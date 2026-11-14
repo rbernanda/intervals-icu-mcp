@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fixtureFetch } from '../fixtures/data';
 import { issueToken, memoryKv, testEnv } from '../helpers';
+import { pkceChallenge } from '../../src/auth/github';
 
 it('runs the production bundle in workerd and passes MCP Inspector discovery and invocation in both protocol eras', async () => {
   const memory = memoryKv();
@@ -19,6 +20,7 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
   const { OAUTH_KV: _kv, ...bindings } = env;
   void _kv;
   const upstreamFetch = fixtureFetch();
+  const nativeClientId = 'https://native.example.net/client.json';
 
   const options = (origin: string, port: number, enableDcr = false) =>
     convertV4MiniflareOptions({
@@ -31,6 +33,21 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
       kvNamespaces: ['OAUTH_KV'],
       bindings: { ...bindings, PUBLIC_ORIGIN: origin, OAUTH_ENABLE_DCR: String(enableDcr) },
       outboundService: async (req) => {
+        if (req.url === nativeClientId) {
+          return new MiniflareResponse(
+            JSON.stringify({
+              client_id: nativeClientId,
+              client_name: 'Synthetic Native Client',
+              application_type: 'native',
+              redirect_uris: ['http://127.0.0.1/callback'],
+              token_endpoint_auth_method: 'none',
+              grant_types: ['authorization_code', 'refresh_token'],
+              response_types: ['code'],
+            }),
+            { headers: { 'content-type': 'application/json' } },
+          );
+        }
+
         if (!req.url.startsWith('https://intervals.icu/')) {
           throw new Error('Unexpected outbound request');
         }
@@ -61,6 +78,40 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
       client_id_metadata_document_supported: true,
       code_challenge_methods_supported: ['S256'],
     });
+
+    const authorizationUrl = new URL('/authorize', origin);
+    authorizationUrl.search = new URLSearchParams({
+      response_type: 'code',
+      client_id: nativeClientId,
+      state: 'synthetic-native-state',
+      code_challenge: await pkceChallenge('v'.repeat(64)),
+      code_challenge_method: 'S256',
+      redirect_uri: 'http://127.0.0.1:54321/callback',
+      scope: 'intervals:read offline_access',
+      resource: `${origin}/mcp`,
+    }).toString();
+
+    for (const browserOrigin of ['https://desktop.example.net', 'null']) {
+      const consent = await fetch(authorizationUrl, { headers: { Origin: browserOrigin } });
+      expect(consent.status).toBe(200);
+      expect(await consent.text()).toContain('Synthetic Native Client');
+      expect(consent.headers.get('access-control-allow-origin')).toBeNull();
+
+      const forgedConsent = await fetch(`${origin}/authorize`, {
+        method: 'POST',
+        headers: { Origin: browserOrigin },
+        body: new URLSearchParams({ handle: 'forged', decision: 'approve' }),
+        redirect: 'manual',
+      });
+      expect(forgedConsent.status).toBe(403);
+
+      const forbiddenMcp = await fetch(`${origin}/mcp`, {
+        method: 'POST',
+        headers: { Origin: browserOrigin, Authorization: `Bearer ${access_token}` },
+      });
+      expect(forbiddenMcp.status).toBe(403);
+    }
+
     const configFile = join(directory, 'config.json');
     await writeFile(
       configFile,

@@ -74,7 +74,7 @@ For account setup, configuration, updates and verification, follow the [self-hos
 
 ## Connect a client
 
-In **ChatGPT → Plugins → Add custom MCP server**, enter your deployed `https://<your-worker-origin>/mcp`, select **OAuth/CIMD**, and leave manual client credentials empty. Review consent, sign in with the configured GitHub account, enable the seven read tools, and compare the athlete profile/latest runs with Intervals. Workspace availability and menu placement may vary.
+In **ChatGPT → Plugins → Add custom MCP server**, enter your deployed `https://<your-worker-origin>/mcp` and choose **OAuth/CIMD** if offered. Desktop forms use **Streamable HTTP**, then **Authenticate** after saving. Leave manual client credentials empty. Review consent, sign in with the configured GitHub account, enable the seven read tools, and compare the athlete profile/latest runs with Intervals. Menu placement may vary.
 
 Authentication uses authorization-code OAuth with S256 PKCE. Every tool request checks token audience, expiry, scope and owner. Access tokens last 15 minutes; refresh grants last 30 days.
 

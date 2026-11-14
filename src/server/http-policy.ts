@@ -2,15 +2,30 @@ import type { Config } from '../config/env';
 
 export const MAX_REQUEST_BYTES = 32_768;
 
-/** Missing Origin is valid for server-to-server clients; present Host/Origin must match configured values. */
+/** CORS is granted only to configured origins, even when cross-site OAuth navigation is allowed. */
+export function allowedCorsOrigin(request: Request, config: Config): string | undefined {
+  const origin = request.headers.get('origin');
+
+  return origin !== null && [config.PUBLIC_ORIGIN, ...config.MCP_ALLOWED_ORIGINS].includes(origin)
+    ? origin
+    : undefined;
+}
+
+/**
+ * OAuth GET navigation can originate outside this site; consent POST and callback state protect the flow.
+ * Every request still targets the canonical host. MCP and other routes require an allowed or absent Origin.
+ */
 export function isAllowedRequestOrigin(request: Request, config: Config): boolean {
   const url = new URL(request.url);
   const host = request.headers.get('host');
   const origin = request.headers.get('origin');
+  const oauthNavigation =
+    request.method === 'GET' && ['/authorize', '/callback'].includes(url.pathname);
+
   return (
     url.origin === config.PUBLIC_ORIGIN &&
     (host === null || host === new URL(config.PUBLIC_ORIGIN).host) &&
-    (origin === null || [config.PUBLIC_ORIGIN, ...config.MCP_ALLOWED_ORIGINS].includes(origin))
+    (oauthNavigation || origin === null || allowedCorsOrigin(request, config) !== undefined)
   );
 }
 

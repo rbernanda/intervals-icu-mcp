@@ -21,7 +21,7 @@ Each server belongs to **one owner**. It uses that owner's Intervals API key/ath
 - The public MCP route checks a provider-issued bearer token, audience, expiry, required read scope and owner subject before listing or invoking tools.
 - OAuth requires exact redirect validation, S256 PKCE, escaped consent metadata, anti-framing headers, same-origin consent POSTs and browser-bound state. GitHub sign-in verifies identity before token issuance. GitHub tokens are discarded afterward.
 - Source normalization whitelists output fields. The upstream profile can contain API credentials; those fields are stripped, never echoed or logged. All seven tools are read-only; no uploads or mutation methods exist.
-- Request sizes, upstream responses, date ranges and retries are bounded. Browser origins are explicitly configured; CORS is not an access-control substitute.
+- Request sizes, upstream responses, date ranges and retries are bounded. MCP browser origins and CORS are explicitly configured. OAuth authorization/callback GETs accept cross-site navigation without granting cross-site CORS; consent POSTs require the server's own Origin, and callbacks require browser-bound state. CORS is not an access-control substitute.
 
 CIMD is the default client-registration method. `OAUTH_ENABLE_DCR=true` optionally exposes dynamic registration for older MCP clients. Registering a client does not grant athlete access: the same owner authentication and consent are always required. Registration is public metadata traffic and can consume KV storage; enable edge rate limiting and monitor usage when exposing DCR. Disabling DCR stops new registrations; existing valid grants still require normal token checks.
 

@@ -1,5 +1,6 @@
 import {
   isAllowedRequestOrigin,
+  allowedCorsOrigin,
   preflightResponse,
   withPrivacyHeaders,
   MAX_REQUEST_BYTES,
@@ -35,7 +36,7 @@ export function createWorker(requestFetch: typeof fetch = fetch, logger: Logger 
         if (!isAllowedRequestOrigin(request, config)) {
           return finish(new Response('Forbidden', { status: 403 }));
         }
-        corsOrigin = request.headers.get('origin') ?? undefined;
+        corsOrigin = allowedCorsOrigin(request, config);
         const preflight = preflightResponse(request, config.OAUTH_ENABLE_DCR);
         if (preflight) {
           return finish(preflight);

@@ -1,6 +1,6 @@
 # Validation record
 
-Validated locally during 2026-11-13–14, macOS, Node.js 22.23.4, pnpm 10.34.9. All fixture athletes, IDs, names, metrics, URLs and credentials are synthetic. No live athlete credentials were supplied, no production resources were created, and no live account integration is implied by these checks.
+Reproducible local validation during 2026-11-13–14 used macOS, Node.js 22.23.4 and pnpm 10.34.9. All committed fixture athletes, IDs, names, metrics, URLs and credentials are synthetic. These automated checks require no live credentials or production resources. Owner-specific live deployment evidence is kept separately in ignored local records.
 
 ## Open-source and self-hosting update
 
@@ -8,7 +8,7 @@ Validated locally during 2026-11-13–14, macOS, Node.js 22.23.4, pnpm 10.34.9. 
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Locked dependency installation | Passed, including frozen-lockfile offline installation                                                                                                                                      |
 | `pnpm types:check`             | Passed; generated Worker bindings match the reusable configuration                                                                                                                          |
-| `pnpm check`                   | Passed: strict TypeScript, ESLint/Prettier, 97 tests across 8 files, publication checks                                                                                                     |
+| `pnpm check`                   | Passed: strict TypeScript, ESLint/Prettier, 102 tests across 9 files, publication checks                                                                                                    |
 | `pnpm types:portable`          | Passed; portable models/aggregation and upstream adapter compile without Workers declarations or Node ambient types                                                                         |
 | `pnpm build`                   | Passed: Wrangler deployment dry run; approximately 1.52 MiB uncompressed / 279 KiB gzip                                                                                                     |
 | `pnpm verify:runtime`          | Passed: 2 runtime tests covering the production bundle and generated owner-specific deployment configuration                                                                                |
@@ -37,7 +37,7 @@ The complete `pnpm audit` (including development dependencies) also reports no k
 
 The Node tests use a Workers base-class shim and a KV test double; native fetch/crypto/KV/metadata/MCP serving are independently checked in workerd. The automated Inspector fixture uses a test-only registered client. Separate tests exercise CIMD resolution and optional DCR. Those checks are not a live account authorization or client installation.
 
-The following remain **unverified**:
+Each owner must independently verify:
 
 - Real Intervals API connectivity, payloads and synchronization freshness with an owner's credentials.
 - Real GitHub browser authorization/callback setup for an owner's OAuth app.
@@ -53,3 +53,5 @@ The review separated tool contracts from service orchestration, extracted calend
 Function spacing is enforced through maintained ESLint Stylistic rules, with blank lines around declarations and assigned functions and between class methods. Targeted JSDoc explains date arithmetic, incomplete totals, source conversions, OAuth trust boundaries and upstream retry/deadline behavior.
 
 The type-aware recommended ESLint preset, required braces, strict equality with nullish checks, and exhaustive-switch rule also pass across the repository. Deliberately invalid snippets confirmed rejection of missing braces, loose equality, an async function without asynchronous work, and an incomplete union switch. Only test doubles are exempt from `require-await`; production functions retain that check. GitHub identity verification separates token exchange, schema validation, identity lookup and the owner check with blank lines.
+
+OAuth navigation regression tests exercise a synthetic native CIMD client with a variable loopback callback port. Foreign and opaque (`null`) Origins can reach the consent page without receiving CORS access. Valid consent handles/cookies cannot authorize a cross-site POST, forged callbacks fail, canonical-host checks remain enforced, and the same Origins are rejected at `/mcp`. These cases also pass against the production bundle in workerd.
