@@ -11,6 +11,7 @@ export const mockToolMethods = {
   get_athlete_profile: 'profile',
   get_recent_activities: 'recent',
   get_activity_details: 'detail',
+  analyze_running_intervals: 'runningIntervals',
   get_fitness_trend: 'fitness',
   get_wellness: 'wellness',
   get_training_calendar: 'calendar',

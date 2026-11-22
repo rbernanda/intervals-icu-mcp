@@ -52,6 +52,7 @@ try {
     'compare_training_periods',
     'analyze_aerobic_efficiency',
     'compare_running_workouts',
+    'analyze_running_intervals',
   ];
   if (
     tools.tools.length !== names.length ||
@@ -59,7 +60,7 @@ try {
       (name) => !tools.tools.some((tool) => tool.name === name && tool.annotations?.readOnlyHint),
     )
   ) {
-    throw new Error('Expected ten read-only tools.');
+    throw new Error('Expected eleven read-only tools.');
   }
   const profile = await client.callTool({ name: 'get_athlete_profile', arguments: {} });
   if (profile.isError) {
@@ -75,7 +76,7 @@ try {
   outputs.recent.parse(recent.structuredContent);
   z.object({ source: z.literal('Intervals.icu') }).parse(profile.structuredContent);
   console.log(
-    'PASS: unauthorized rejection, MCP connection, ten-tool discovery, profile and activity retrieval, validated structured outputs. No athlete data printed.',
+    'PASS: unauthorized rejection, MCP connection, eleven-tool discovery, profile and activity retrieval, validated structured outputs. No athlete data printed.',
   );
 } finally {
   await client.close();

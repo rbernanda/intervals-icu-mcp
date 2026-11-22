@@ -6,7 +6,7 @@ Read-only access to your Intervals.icu training data and deterministic endurance
 
 ## Features and architecture
 
-- Ten read-only tools: profile, activities/details, fitness, wellness, calendar, summaries and three deterministic analyses.
+- Eleven read-only tools: profile, activities/details, fitness, wellness, calendar, summaries and four deterministic analyses.
 - Sport-neutral volume/load comparisons; running-first efficiency proxies and comparable workouts.
 - Explicit units, athlete-local dates, source/computed provenance and missing-data/coverage reporting.
 - Optional English/Indonesian Training Analyst Skill for workout, weekly, trend and race-preparation reviews.
@@ -73,24 +73,27 @@ See the dated [compatibility matrix](docs/compatibility.md): portable resource t
 
 ## Tools
 
-| Tool                         | Purpose / principal inputs                                                 |
-| ---------------------------- | -------------------------------------------------------------------------- |
-| `get_athlete_profile`        | Configured athlete profile; no arguments                                   |
-| `get_recent_activities`      | Optional inclusive dates, sport and limit 1–100; default 20 / last 28 days |
-| `get_activity_details`       | Activity ID; optional intervals (no raw streams)                           |
-| `get_fitness_trend`          | Inclusive dates; source CTL/ATL and labeled computed form                  |
-| `get_wellness`               | Inclusive dates; available HRV, resting HR, sleep and subjective metrics   |
-| `get_training_calendar`      | Inclusive dates; events and explicitly paired completed activities         |
-| `get_training_summary`       | Days 7/14/28/42/90, optional sport; coverage-aware totals                  |
-| `compare_training_periods`   | Non-overlapping current/baseline date ranges, optional sport               |
-| `analyze_aerobic_efficiency` | Dates and athlete-designated steady-aerobic running IDs                    |
-| `compare_running_workouts`   | Dates, optional IDs/category/reference/settings; limit 2–20                |
+| Tool                         | Purpose / principal inputs                                                        |
+| ---------------------------- | --------------------------------------------------------------------------------- |
+| `get_athlete_profile`        | Configured athlete profile; no arguments                                          |
+| `get_recent_activities`      | Optional inclusive dates, sport and limit 1–100; default 20 / last 28 days        |
+| `get_activity_details`       | Activity ID; optional intervals (no raw streams)                                  |
+| `analyze_running_intervals`  | Activity ID; optional work indexes and target pace; repetition execution analysis |
+| `get_fitness_trend`          | Inclusive dates; source CTL/ATL and labeled computed form                         |
+| `get_wellness`               | Inclusive dates; available HRV, resting HR, sleep and subjective metrics          |
+| `get_training_calendar`      | Inclusive dates; events and explicitly paired completed activities                |
+| `get_training_summary`       | Days 7/14/28/42/90, optional sport; coverage-aware totals                         |
+| `compare_training_periods`   | Non-overlapping current/baseline date ranges, optional sport                      |
+| `analyze_aerobic_efficiency` | Dates and athlete-designated steady-aerobic running IDs                           |
+| `compare_running_workouts`   | Dates, optional IDs/category/reference/settings; limit 2–20                       |
 
-## Deterministic Analytics — v0.2
+## Deterministic Analytics
 
-Three analytical tools move arithmetic from the LLM into pure tested functions. Volume/load comparisons support multiple sports with explicit filtering. Running is the first sport-specific adapter; other efficiency/comparability sports return unsupported results. Source CTL/ATL, load and efficiency fields stay distinct from computed aggregates and the speed/HR proxy. The skill prefers analytical tools when available and discloses older-server fallbacks.
+Four analytical tools move arithmetic from the LLM into pure tested functions. Volume/load comparisons support multiple sports with explicit filtering. Running is the first sport-specific adapter; other efficiency/comparability sports return unsupported results. Source CTL/ATL, load and efficiency fields stay distinct from computed aggregates and the speed/HR proxy. The skill prefers analytical tools when available and discloses older-server fallbacks.
 
 Dates are inclusive athlete-local `YYYY-MM-DD`, at most 90 days per range. Units are meters, seconds, m/s, seconds/km, bpm, watts and kilograms; running cadence retains source rpm and explicitly derives spm. Missing metrics remain null; partial load is a known subtotal, not a complete total. API success does not establish synchronization coverage. No daily source TSB is documented: same-day CTL − ATL is explicitly computed, not authoritative source Form. Efficiency proxies are observational, not laboratory running economy, drift or race predictions. See [methods, settings and limitations](docs/analytics-methodology.md).
+
+Repetition analysis uses recorded WORK/RECOVERY types or athlete-selected source positions, with explicit metric coverage, timing checks and optional target pace differences. See [interval analysis](docs/running-intervals.md). This addition is unreleased; existing deployments retain ten tools until updated.
 
 ## Example questions
 

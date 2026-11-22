@@ -25,6 +25,7 @@ export const TOOL_NAMES = [
   'compare_training_periods',
   'analyze_aerobic_efficiency',
   'compare_running_workouts',
+  'analyze_running_intervals',
 ] as const;
 
 export function configurationDiagnostics(values: Record<string, string>): Diagnostic[] {
@@ -201,11 +202,11 @@ export async function endpointDiagnostics(options: {
       record(
         stage,
         'FAIL',
-        'Expected ten read-only tools. Update the deployed Worker and refresh client discovery.',
+        'Expected eleven read-only tools. Update the deployed Worker and refresh client discovery.',
       );
       return rows;
     }
-    record(stage, 'PASS', 'All ten read-only tools are discoverable.');
+    record(stage, 'PASS', 'All eleven read-only tools are discoverable.');
     stage = 'athlete_profile';
     const profileCall = await client.callTool({ name: 'get_athlete_profile', arguments: {} });
     if (profileCall.isError) {

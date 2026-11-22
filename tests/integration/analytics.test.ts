@@ -1,12 +1,18 @@
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
 import { describe, expect, it, vi } from 'vitest';
 import { createWorker } from '../../src/index';
+import { outputs } from '../../src/tools/contracts';
 import { analyticsOutputs } from '../../src/tools/analytics/contracts';
 import { fixtureFetch } from '../fixtures/data';
 import { context, issueToken, mcpRequest, testEnv } from '../helpers';
 
 const range = { start_date: '2026-11-08', end_date: '2026-11-14' };
 const calls = [
+  {
+    name: 'analyze_running_intervals',
+    arguments: { activity_id: 'a2', target_pace_s_per_km: 300 },
+    output: outputs.runningIntervals,
+  },
   {
     name: 'compare_training_periods',
     arguments: {
@@ -25,7 +31,7 @@ const calls = [
 ] as const;
 
 describe('analytics through the original protected MCP transport', () => {
-  it('invokes all three tools through the official client with validated structured content and privacy-safe logs', async () => {
+  it('invokes all four tools through the official client with validated structured content and privacy-safe logs', async () => {
     const env = testEnv();
     const { access_token } = await issueToken(env);
     const logger = vi.fn();

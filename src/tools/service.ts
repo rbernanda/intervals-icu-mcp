@@ -15,6 +15,10 @@ import { matchesSport } from '../domain/models';
 import { aggregateSummary } from '../domain/summary';
 import { inputs, outputs } from './contracts';
 import { AnalyticsService } from './analytics/service';
+import {
+  analyzeRunningIntervals,
+  MAX_ANALYSIS_INTERVALS,
+} from '../analytics/sports/running/intervals';
 
 const METRIC_NOTE =
   'Distances are meters, durations seconds, speed m/s, pace s/km (computed as 1000 / average_speed), power watts, heart rate bpm. Running cadence spm is computed as 2 × source rpm. Training load preserves source units.';
@@ -139,9 +143,9 @@ export class TrainingService {
       if (source.id !== activity.id) {
         throw new AppError('invalid_response', 'Intervals do not match the requested activity.');
       }
-      truncated = (source.icu_intervals?.length ?? 0) > 200;
+      truncated = (source.icu_intervals?.length ?? 0) > MAX_ANALYSIS_INTERVALS;
       intervals = (source.icu_intervals ?? [])
-        .slice(0, 200)
+        .slice(0, MAX_ANALYSIS_INTERVALS)
         .map((i) => normalizeInterval(i, activity.type));
     }
     return outputs.detail.parse({
@@ -152,6 +156,22 @@ export class TrainingService {
       activity: normalizeActivity(activity),
       intervals,
       intervals_truncated: truncated,
+    });
+  }
+
+  async runningIntervals(args: unknown) {
+    const input = inputs.runningIntervals.parse(args);
+    // Reuse ownership verification, source identity checks and the existing bounded retrieval.
+    const detail = await this.detail({ activity_id: input.activity_id, include_intervals: true });
+    return outputs.runningIntervals.parse({
+      ...this.context(detail.warnings),
+      activity: detail.activity,
+      analysis: analyzeRunningIntervals(
+        detail.activity.sport_type,
+        detail.intervals ?? [],
+        input,
+        detail.intervals_truncated,
+      ),
     });
   }
 
