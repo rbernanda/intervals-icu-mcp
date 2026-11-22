@@ -11,6 +11,10 @@ import {
   calendarEntrySchema,
 } from '../domain/models';
 import { summarySchema } from '../domain/summary';
+import {
+  intervalOptionsSchema,
+  runningIntervalsSchema,
+} from '../analytics/sports/running/intervals';
 
 const sportSchema = z
   .string()
@@ -33,6 +37,7 @@ export const inputs = {
   detail: z
     .object({ activity_id: activityIdSchema, include_intervals: z.boolean().default(false) })
     .strict(),
+  runningIntervals: intervalOptionsSchema.extend({ activity_id: activityIdSchema }).strict(),
   range: z.object(rangeShape).strict(),
   summary: z
     .object({
@@ -67,6 +72,11 @@ export const outputs = {
     activity: activityOutputSchema,
     intervals: z.array(intervalOutputSchema).max(200).nullable(),
     intervals_truncated: z.boolean(),
+  }),
+  runningIntervals: z.object({
+    ...contextShape,
+    activity: activityOutputSchema,
+    analysis: runningIntervalsSchema,
   }),
   fitness: z.object({
     ...contextShape,

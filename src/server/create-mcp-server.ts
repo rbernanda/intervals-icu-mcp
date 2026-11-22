@@ -103,6 +103,13 @@ export function createMcpServer(service: TrainingService, logger: Logger = log):
     (args) => service.detail(args),
   );
   register(
+    'analyze_running_intervals',
+    'Analyze one owned running activity using at most 200 source analysis intervals, never raw streams. Defaults to exact source WORK/RECOVERY types; optional unique 1-based work_interval_indexes designate repetitions from source order (not IDs or chronological positions). Optional positive target_pace_s_per_km (max 3600). Returns repetition metrics, target differences, covered work/recovery totals, pooled moving pace, descriptive pace sample SD/CV and first-to-last pace changes when chronology is verified. Read analysis.status and data_quality; truncated/overlapping/invalid timing blocks aggregates. No device-lap guarantee, physiological fatigue score or race prediction.',
+    inputs.runningIntervals,
+    outputs.runningIntervals,
+    (args) => service.runningIntervals(args),
+  );
+  register(
     'get_fitness_trend',
     'Get source daily wellness ctl (fitness), atl (fatigue), ctlLoad, atlLoad and rampRate for up to 90 inclusive days. Daily source TSB is unavailable; computed_form is labeled same-day ctl minus atl, never a CTL/ATL approximation.',
     inputs.range,

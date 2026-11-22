@@ -2,6 +2,12 @@
 
 Repository releases use [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The historical v0.1/v0.2 names describe implementation milestones, not the already published repository tags. Published versions must not be replaced.
 
+## [Unreleased]
+
+- Add read-only `analyze_running_intervals`: bounded repetition metrics, explicit work selection, target pace differences, coverage-aware work/recovery totals, descriptive pace consistency and timing-verified first/last changes.
+- Preserve existing tool contracts and ownership checks; update skill routing, discovery diagnostics and synthetic regression coverage for eleven tools.
+- New interval method: `running-intervals/1.0.0`; existing analytics methods and release version are unchanged pending review.
+
 ## [1.2.0] — 2026-11-14
 
 Stable portable-distribution milestone (originally called v1.0 in the roadmap), promoted from v1.2.0-rc.1 without changing tool contracts or analytics methods.

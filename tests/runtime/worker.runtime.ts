@@ -166,6 +166,7 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
         'compare_training_periods',
         'analyze_aerobic_efficiency',
         'compare_running_workouts',
+        'analyze_running_intervals',
       ]) {
         expect(listed.stdout).toContain(name);
       }
@@ -219,6 +220,29 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
       expect(analyticalCall.stdout).toContain('endurance-analytics/0.2.0');
       expect(analyticalCall.stdout).toContain('30000');
       expect(analyticalCall.stdout).not.toContain('MUST-NOT-LEAK');
+      const intervalCall = await promisify(execFile)(
+        process.execPath,
+        [
+          ...args,
+          '--method',
+          'tools/call',
+          '--tool-name',
+          'analyze_running_intervals',
+          '--tool-args-json',
+          JSON.stringify({ activity_id: 'a2', target_pace_s_per_km: 310 }),
+        ],
+        {
+          timeout: 15000,
+          env: {
+            ...process.env,
+            MCP_INSPECTOR_OAUTH_STATE_PATH: join(directory, 'oauth.json'),
+            MCP_CLIENT_CONFIG_PATH: join(directory, 'client.json'),
+          },
+        },
+      );
+      expect(intervalCall.stdout).toContain('running-intervals/1.0.0');
+      expect(intervalCall.stdout).toContain('target_pace_difference_s_per_km');
+      expect(intervalCall.stdout).not.toContain('MUST-NOT-LEAK');
     }
 
     // Exercise the opt-in compatibility endpoint in the real runtime too.
