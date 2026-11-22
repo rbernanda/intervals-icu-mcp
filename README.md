@@ -93,7 +93,7 @@ Four analytical tools move arithmetic from the LLM into pure tested functions. V
 
 Dates are inclusive athlete-local `YYYY-MM-DD`, at most 90 days per range. Units are meters, seconds, m/s, seconds/km, bpm, watts and kilograms; running cadence retains source rpm and explicitly derives spm. Missing metrics remain null; partial load is a known subtotal, not a complete total. API success does not establish synchronization coverage. No daily source TSB is documented: same-day CTL − ATL is explicitly computed, not authoritative source Form. Efficiency proxies are observational, not laboratory running economy, drift or race predictions. See [methods, settings and limitations](docs/analytics-methodology.md).
 
-Repetition analysis uses recorded WORK/RECOVERY types or athlete-selected source positions, with explicit metric coverage, timing checks and optional target pace differences. See [interval analysis](docs/running-intervals.md). This addition is unreleased; existing deployments retain ten tools until updated.
+Repetition analysis uses recorded WORK/RECOVERY types or athlete-selected source positions, with explicit metric coverage, timing checks and optional target pace differences. See [interval analysis](docs/running-intervals.md). Available in **v1.3.0**; existing deployments retain their previous tools until explicitly updated.
 
 ## Example questions
 
@@ -105,4 +105,4 @@ Never commit keys, filled-in environment files, instance configuration, tokens o
 
 [Upgrades, rollback and release checklist](docs/releases.md) · [Changelog](CHANGELOG.md) · [Troubleshooting](docs/troubleshooting.md) · [Validation evidence](docs/distribution-validation.md) · [Contributing](CONTRIBUTING.md) · [MIT License](LICENSE) · [Dependency notices](THIRD_PARTY_NOTICES.md).
 
-The portable-distribution milestone is released as **1.2.0** because v1.0.0/v1.1.0 already exist. No existing tags are replaced. See the dated validation evidence for deployment and client verification boundaries.
+Current release: **1.3.0**, adding running repetition analysis to the portable-distribution foundation. Existing tags remain unchanged. See the dated validation evidence for deployment and client verification boundaries.

@@ -28,4 +28,4 @@ In this repository the existing `.agents/skills` symlink already points to the c
 
 ## Verify
 
-Confirm ten tools in the client; call `get_athlete_profile`, privately compare identity, then follow [first insight](../first-insight.md). Missing tools require MCP connection repair, not skill reinstallation. Restart a stale session if discovery does not refresh. Native Codex configuration does not register a ChatGPT-mode plugin. Current verification boundaries are in the [matrix](../compatibility.md).
+Confirm eleven tools in the client; call `get_athlete_profile`, privately compare identity, then follow [first insight](../first-insight.md). Missing tools require MCP connection repair, not skill reinstallation. Restart a stale session if discovery does not refresh. Native Codex configuration does not register a ChatGPT-mode plugin. Current verification boundaries are in the [matrix](../compatibility.md).

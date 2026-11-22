@@ -1,6 +1,6 @@
 # Running interval analysis
 
-Unreleased addition to the read-only server. No deployment or marketplace update is implied. Existing tools retain their contracts; the new calculation contract is `running-intervals/1.0.0`.
+Added in **v1.3.0** of the read-only server. No deployment or marketplace update is implied. Existing tools retain their contracts; the new calculation contract is `running-intervals/1.0.0`.
 
 ## Example
 
@@ -43,4 +43,4 @@ The service reuses activity-detail ownership verification before fetching interv
 
 Synthetic tests cover known repetition arithmetic, source selection versus chronology, missing values, invalid input, unsupported sports, incomplete timing, overlap, truncation, ownership and authenticated MCP calls. Run `pnpm check`, `pnpm types:portable` and `pnpm verify:runtime`; these do not verify a live athlete account. The upstream [official API](https://intervals.icu/api/v1/docs) documents the activity intervals endpoint; this tool uses the existing adapter without expanding its field selection or endpoints.
 
-Local verification on 2026-11-22: `pnpm check` passed (254 tests in 21 files, types, lint, skill and distribution checks); `pnpm types:portable` passed; `pnpm verify:runtime` passed its dry-run build and both runtime tests, including the new tool through Inspector in both protocol eras. The skill metadata validator also passed. Wrangler reported a sandbox warning when attempting to write its default log file; the build and runtime checks completed successfully. No live athlete retrieval, deployment, publication or commit was performed for this change.
+Local verification on 2026-11-22: `pnpm check` passed (254 tests in 21 files, types, lint, skill and distribution checks); `pnpm types:portable` passed; `pnpm verify:runtime` passed its dry-run build and both runtime tests, including the new tool through Inspector in both protocol eras. The skill metadata validator also passed. Wrangler reported a sandbox warning when attempting to write its default log file; the build and runtime checks completed successfully. These checks used synthetic training data and did not access a live athlete account or deploy the Worker.
