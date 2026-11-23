@@ -19,6 +19,7 @@ import {
   analyzeRunningIntervals,
   MAX_ANALYSIS_INTERVALS,
 } from '../analytics/sports/running/intervals';
+import { reviewRunningExecution } from '../analytics/sports/running/execution-review';
 
 const METRIC_NOTE =
   'Distances are meters, durations seconds, speed m/s, pace s/km (computed as 1000 / average_speed), power watts, heart rate bpm. Running cadence spm is computed as 2 × source rpm. Training load preserves source units.';
@@ -168,6 +169,21 @@ export class TrainingService {
       activity: detail.activity,
       analysis: analyzeRunningIntervals(
         detail.activity.sport_type,
+        detail.intervals ?? [],
+        input,
+        detail.intervals_truncated,
+      ),
+    });
+  }
+
+  async executionReview(args: unknown) {
+    const input = inputs.executionReview.parse(args);
+    const detail = await this.detail({ activity_id: input.activity_id, include_intervals: true });
+    return outputs.executionReview.parse({
+      ...this.context(detail.warnings),
+      activity: detail.activity,
+      analysis: reviewRunningExecution(
+        detail.activity,
         detail.intervals ?? [],
         input,
         detail.intervals_truncated,

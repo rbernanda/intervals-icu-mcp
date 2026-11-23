@@ -68,6 +68,7 @@ export async function validateSkillDirectory(canonical: string): Promise<string[
       'metric-definitions',
       'analysis-methods',
       'mcp-tool-mapping',
+      'execution-review',
       'interpretation-guardrails',
     ].map((name) => `references/${name}.md`),
     ...['workout-review', 'weekly-review', 'performance-trend', 'race-readiness'].map(

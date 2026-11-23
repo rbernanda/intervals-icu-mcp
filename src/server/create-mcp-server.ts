@@ -110,6 +110,13 @@ export function createMcpServer(service: TrainingService, logger: Logger = log):
     (args) => service.runningIntervals(args),
   );
   register(
+    'review_running_execution',
+    'Compare one owned completed run with an existing prescription from any source: a connected provider, calendar, coach document, exported file or athlete-supplied details. No plan creation/storage or provider-specific dependency. Caller supplies bounded ordered steps, reported_source (a 1-120 character attribution label, never fetched), extraction_basis, complete/partial flag, optional scheduled_date and explicit source interval indexes per step. Omit unknown dates rather than inventing them. Match defaults unconfirmed: no numerical comparisons until athlete_confirmed or source_linked. Attribution/match are caller assertions, not independent verification or automatic integrations. Targets support distance m, duration s with explicit moving/elapsed basis and one/two-sided pace bounds in s/km. No automatic matching, invented targets, plan changes or overall score. Missing/partial/truncated/overlapping data is flagged; extraction/normalization happens outside this server.',
+    inputs.executionReview,
+    outputs.executionReview,
+    (args) => service.executionReview(args),
+  );
+  register(
     'get_fitness_trend',
     'Get source daily wellness ctl (fitness), atl (fatigue), ctlLoad, atlLoad and rampRate for up to 90 inclusive days. Daily source TSB is unavailable; computed_form is labeled same-day ctl minus atl, never a CTL/ATL approximation.',
     inputs.range,

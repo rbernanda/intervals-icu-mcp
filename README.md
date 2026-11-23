@@ -6,7 +6,7 @@ Read-only access to your Intervals.icu training data and deterministic endurance
 
 ## Features and architecture
 
-- Eleven read-only tools: profile, activities/details, fitness, wellness, calendar, summaries and four deterministic analyses.
+- Twelve read-only tools in the development snapshot: profile, activities/details, fitness, wellness, calendar, summaries and five deterministic analyses.
 - Sport-neutral volume/load comparisons; running-first efficiency proxies and comparable workouts.
 - Explicit units, athlete-local dates, source/computed provenance and missing-data/coverage reporting.
 - Optional English/Indonesian Training Analyst Skill for workout, weekly, trend and race-preparation reviews.
@@ -78,6 +78,7 @@ See the dated [compatibility matrix](docs/compatibility.md): portable resource t
 | `get_athlete_profile`        | Configured athlete profile; no arguments                                          |
 | `get_recent_activities`      | Optional inclusive dates, sport and limit 1–100; default 20 / last 28 days        |
 | `get_activity_details`       | Activity ID; optional intervals (no raw streams)                                  |
+| `review_running_execution`   | Activity ID and one existing supplied prescription; per-step target comparison    |
 | `analyze_running_intervals`  | Activity ID; optional work indexes and target pace; repetition execution analysis |
 | `get_fitness_trend`          | Inclusive dates; source CTL/ATL and labeled computed form                         |
 | `get_wellness`               | Inclusive dates; available HRV, resting HR, sleep and subjective metrics          |
@@ -89,11 +90,13 @@ See the dated [compatibility matrix](docs/compatibility.md): portable resource t
 
 ## Deterministic Analytics
 
-Four analytical tools move arithmetic from the LLM into pure tested functions. Volume/load comparisons support multiple sports with explicit filtering. Running is the first sport-specific adapter; other efficiency/comparability sports return unsupported results. Source CTL/ATL, load and efficiency fields stay distinct from computed aggregates and the speed/HR proxy. The skill prefers analytical tools when available and discloses older-server fallbacks.
+Five analytical tools move arithmetic from the LLM into pure tested functions. Volume/load comparisons support multiple sports with explicit filtering. Running is the first sport-specific adapter; other efficiency/comparability sports return unsupported results. Source CTL/ATL, load and efficiency fields stay distinct from computed aggregates and the speed/HR proxy. The skill prefers analytical tools when available and discloses older-server fallbacks.
 
 Dates are inclusive athlete-local `YYYY-MM-DD`, at most 90 days per range. Units are meters, seconds, m/s, seconds/km, bpm, watts and kilograms; running cadence retains source rpm and explicitly derives spm. Missing metrics remain null; partial load is a known subtotal, not a complete total. API success does not establish synchronization coverage. No daily source TSB is documented: same-day CTL − ATL is explicitly computed, not authoritative source Form. Efficiency proxies are observational, not laboratory running economy, drift or race predictions. See [methods, settings and limitations](docs/analytics-methodology.md).
 
 Repetition analysis uses recorded WORK/RECOVERY types or athlete-selected source positions, with explicit metric coverage, timing checks and optional target pace differences. See [interval analysis](docs/running-intervals.md). Available in **v1.3.0**; existing deployments retain their previous tools until explicitly updated.
+
+The unreleased `review_running_execution` addition compares an existing session prescription with explicitly mapped actual intervals, including heterogeneous targets and elapsed recovery. Prescriptions are provider-neutral: the agent can normalize targets from available read-only connections, calendar entries, coach instructions, documents or workout exports. No specific prescription app or watch is required. The Worker still retrieves actuals only from Intervals.icu and does not add provider integrations, file parsers, plan storage or account writes. See [execution review](docs/execution-review.md). Stable v1.3.0 still exposes eleven tools until a future release/deployment.
 
 ## Example questions
 
