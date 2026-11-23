@@ -76,7 +76,7 @@ Check each stage separately:
 2. **Access control:** a request to `<origin>/mcp` without a token returns 401 and a `WWW-Authenticate` challenge. OAuth metadata/preflight requests contain no athlete data.
 3. **Discovery:** inspect `/.well-known/oauth-protected-resource/mcp` and `/.well-known/oauth-authorization-server`. Resource, issuer and endpoint URLs must match your origin; S256 and CIMD must be advertised. Registration is advertised only when enabled.
 4. **Owner authorization:** use ChatGPT or a compatible MCP client. Review the client/domain/redirect host on the consent page and sign in with your configured GitHub account. Another identity must be denied.
-5. **Protocol:** discover exactly eleven read-only tools; invoke `get_athlete_profile` and compare the ID/timezone with your source account.
+5. **Protocol:** discover exactly twelve read-only tools; invoke `get_athlete_profile` and compare the ID/timezone with your source account.
 6. **Live data:** retrieve a recent run and compare ID, date, meters and duration with Intervals. Verify fitness CTL/ATL against the source. Missing metrics remain missing.
 7. **Smoke:** a legitimately authorized short-lived OAuth token can be supplied locally to `pnpm smoke` through `MCP_TOKEN_FILE` or `MCP_ACCESS_TOKEN`. Set `MCP_URL` to the actual endpoint. Avoid command arguments/history and never send the token to maintainers. The script prints check results without athlete payloads.
 

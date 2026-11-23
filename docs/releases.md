@@ -4,7 +4,7 @@
 
 One repository release identifies server, scripts and canonical skill. `package.json`, `src/version.ts`, skill frontmatter `metadata.version` and the changelog must agree; `pnpm check:distribution` enforces this. Installed skill receipts record that version plus a deterministic content hash. Analytics' method identifier has a separate calculation-contract purpose and is not the application release version.
 
-**Current release: v1.3.0**, adding running interval analysis. Existing public tags, including v1.0.0, v1.1.0, v1.2.0-rc.1 and v1.2.0, remain unchanged. The portable-distribution milestone was v1.2.0. Future publication and production deployment require explicit owner authorization.
+**Current release: v1.4.0**, adding provider-neutral existing-plan execution review and updated development tooling. Existing public tags, including v1.0.0, v1.1.0, v1.2.0-rc.1, v1.2.0 and v1.3.0, remain unchanged. The portable-distribution milestone was v1.2.0. Future publication and production deployment require explicit owner authorization.
 
 Follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html): additive compatible functionality is minor, fixes are patch, incompatible public tool/configuration contracts require a major release and migration notes. Older skills can use stable data tools; newer skills disclose an analytics fallback for older deployments. Copies and running Workers update independently.
 
@@ -34,8 +34,8 @@ Follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html): additive comp
 
 ```text
 Version / exact commit:
-Changes: running repetition analysis and updated skill routing/diagnostics
-Compatibility: eleven read-only tools; existing ten contracts and owner OAuth preserved
+Changes: provider-neutral execution review, skill routing and development tooling
+Compatibility: twelve read-only tools; existing eleven contracts and owner OAuth preserved
 Upgrade: install locked dependencies, run checks, explicitly redeploy; update skill copies separately
 Verification: executed commands, synthetic vs live results, client versions and dates
 Limitations: untested client/account combinations; unknown synchronization coverage; no hosted skill auto-install
@@ -56,7 +56,7 @@ pnpm verify:runtime
 pnpm build:instance
 ```
 
-Review generated settings against the new template. Only when ready, run `pnpm deploy:instance`. This changes production and requires the instance owner's authorization. Verify actual URL, unauthenticated 401, owner OAuth, eleven tools, profile identity, a recent run and one comparison. Update skill copies explicitly with `pnpm skill:install --agent <target> --project <project> --update`; edited/unmanaged copies are never overwritten. Refresh client tool discovery. A skill update alone cannot upgrade the Worker.
+Review generated settings against the new template. Only when ready, run `pnpm deploy:instance`. This changes production and requires the instance owner's authorization. Verify actual URL, unauthenticated 401, owner OAuth, twelve tools, profile identity, a recent run and one comparison. Update skill copies explicitly with `pnpm skill:install --agent <target> --project <project> --update`; edited/unmanaged copies are never overwritten. Refresh client tool discovery. A skill update alone cannot upgrade the Worker.
 
 ## Rollback
 

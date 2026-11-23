@@ -4,9 +4,12 @@ Repository releases use [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-11-23
+
 - Add stateless `review_running_execution` for explicit existing-plan/activity association, per-step distance/duration/pace targets, source interval mapping and quality-aware comparison. Preserve moving versus elapsed rest and one-sided pace limits.
 - Add provider-neutral prescription attribution and optional read-only skill orchestration for available connected sources or user-supplied text/documents/exports. COROS is an optional retrieval example; unknown schedule dates remain unknown. Preserve degraded-export and original-prescription limitations. No duplicate plan, profile storage, provider credentials, writes or plan adaptation.
-- Add running-execution/1.0.0 calculation contract and twelve-tool development discovery; existing tool contracts and release identity remain unchanged pending review.
+- Add running-execution/1.0.0 calculation contract and twelve-tool discovery; existing eleven tool contracts and owner OAuth remain unchanged. Server, scripts and canonical skill share release version 1.4.0.
+- Update development dependencies: Workers types 5.20261117.1, Stylistic 6.0.1, ESLint 10.15.0, TypeScript 6.0.3 and Vitest 5.1.0. Resolve overlapping lockfile changes and validate the combined toolchain.
 
 ## [1.3.0] — 2026-11-22
 

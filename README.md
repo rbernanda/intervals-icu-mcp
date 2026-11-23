@@ -6,7 +6,7 @@ Read-only access to your Intervals.icu training data and deterministic endurance
 
 ## Features and architecture
 
-- Twelve read-only tools in the development snapshot: profile, activities/details, fitness, wellness, calendar, summaries and five deterministic analyses.
+- Twelve read-only tools: profile, activities/details, fitness, wellness, calendar, summaries and five deterministic analyses.
 - Sport-neutral volume/load comparisons; running-first efficiency proxies and comparable workouts.
 - Explicit units, athlete-local dates, source/computed provenance and missing-data/coverage reporting.
 - Optional English/Indonesian Training Analyst Skill for workout, weekly, trend and race-preparation reviews.
@@ -96,7 +96,7 @@ Dates are inclusive athlete-local `YYYY-MM-DD`, at most 90 days per range. Units
 
 Repetition analysis uses recorded WORK/RECOVERY types or athlete-selected source positions, with explicit metric coverage, timing checks and optional target pace differences. See [interval analysis](docs/running-intervals.md). Available in **v1.3.0**; existing deployments retain their previous tools until explicitly updated.
 
-The unreleased `review_running_execution` addition compares an existing session prescription with explicitly mapped actual intervals, including heterogeneous targets and elapsed recovery. Prescriptions are provider-neutral: the agent can normalize targets from available read-only connections, calendar entries, coach instructions, documents or workout exports. No specific prescription app or watch is required. The Worker still retrieves actuals only from Intervals.icu and does not add provider integrations, file parsers, plan storage or account writes. See [execution review](docs/execution-review.md). Stable v1.3.0 still exposes eleven tools until a future release/deployment.
+Added in **v1.4.0**, `review_running_execution` compares an existing session prescription with explicitly mapped actual intervals, including heterogeneous targets and elapsed recovery. Prescriptions are provider-neutral: the agent can normalize targets from available read-only connections, calendar entries, coach instructions, documents or workout exports. No specific prescription app or watch is required. The Worker still retrieves actuals only from Intervals.icu and does not add provider integrations, file parsers, plan storage or account writes. See [execution review](docs/execution-review.md). Existing deployments require an explicit upgrade to expose all twelve tools.
 
 ## Example questions
 
@@ -108,4 +108,4 @@ Never commit keys, filled-in environment files, instance configuration, tokens o
 
 [Upgrades, rollback and release checklist](docs/releases.md) · [Changelog](CHANGELOG.md) · [Troubleshooting](docs/troubleshooting.md) · [Validation evidence](docs/distribution-validation.md) · [Contributing](CONTRIBUTING.md) · [MIT License](LICENSE) · [Dependency notices](THIRD_PARTY_NOTICES.md).
 
-Current release: **1.3.0**, adding running repetition analysis to the portable-distribution foundation. Existing tags remain unchanged. See the dated validation evidence for deployment and client verification boundaries.
+Current release: **1.4.0**, adding provider-neutral existing-plan execution review and updated development tooling. Existing tags remain unchanged. See the dated validation evidence for deployment and client verification boundaries.

@@ -34,7 +34,7 @@ Use `--agent claude-code` or `--agent cursor` for those clients. The installer d
 
 ## 4. Verify and obtain the first insight
 
-Discover eleven read-only tools and confirm `get_athlete_profile` matches your source account privately. Check your deployed endpoint using [doctor](diagnostics.md), then follow the [synthetic first-review example](first-insight.md). Confirm dates, units and one actual run against Intervals.icu before interpreting trends.
+Discover twelve read-only tools and confirm `get_athlete_profile` matches your source account privately. Check your deployed endpoint using [doctor](diagnostics.md), then follow the [synthetic first-review example](first-insight.md). Confirm dates, units and one actual run against Intervals.icu before interpreting trends.
 
 ```text
 Review my running over the last seven completed local days against the preceding seven.

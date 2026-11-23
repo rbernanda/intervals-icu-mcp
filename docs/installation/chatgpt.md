@@ -6,7 +6,7 @@ Requires a public HTTPS deployment and an account/workspace that permits custom 
 2. Name: `Intervals.icu Training` (or your preferred name). Server URL: your actual `https://<your-origin>/mcp`.
 3. Select **OAuth**, prefer **CIMD**, and leave manual client ID/secret empty. OIDC is not required. Read scope is `intervals:read`; `offline_access` permits refresh. The server advertises authorization metadata and S256 PKCE.
 4. Review the registration warning, create the plugin, authorize through your Worker and GitHub as its configured owner, then install/connect.
-5. In a new **ChatGPT-mode** conversation, select the plugin using `@`. Verify eleven read-only tools, privately confirm profile identity and run [first insight](../first-insight.md).
+5. In a new **ChatGPT-mode** conversation, select the plugin using `@`. Verify twelve read-only tools, privately confirm profile identity and run [first insight](../first-insight.md).
 
 A Codex-mode connection, OAuth callback success or “desktop only” plugin does not prove the hosted ChatGPT conversation can call tools. Missing registry entries mean no data has been accessed in that conversation. Follow the detailed [onboarding runbook](../onboarding-runbook.md#6-register-in-chatgpt-mode) and [troubleshooting](../troubleshooting.md).
 

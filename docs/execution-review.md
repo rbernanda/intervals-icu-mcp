@@ -1,6 +1,6 @@
 # Existing-plan execution review
 
-Unreleased read-only `review_running_execution` tool. The workflow reviews an existing prescription; it does not create, store, schedule or adapt a training plan. The deployed v1.3.0 tools remain unchanged until a future reviewed release/deployment.
+Added in **v1.4.0**, the read-only `review_running_execution` tool. The workflow reviews an existing prescription; it does not create, store, schedule or adapt a training plan. Existing deployments retain their tools until explicitly upgraded.
 
 ## Sources and responsibilities
 
@@ -67,4 +67,4 @@ All private operations reuse existing owner OAuth, activity ownership checks, re
 
 Run `pnpm check`, `pnpm types:portable`, `pnpm types:check`, `pnpm verify:runtime` and `pnpm test:fresh`. Numerical fixtures exercise heterogeneous repetitions, elapsed rest, pace limits, split laps, missing/partial data, explicit matching and unsafe mappings. Protected MCP and workerd/Inspector tests cover the new tool. Synthetic tests do not establish live provider integrations, file parsing support, export fidelity or original-prescription retention.
 
-Local verification on 2026-11-23: all commands above passed, including the provider-neutral contract regressions in 23 files, both runtime tests and relocated skill installation/diagnostics for all three supported local targets. The skill metadata validator and diff whitespace checks also passed. This records local synthetic validation; no new tool deployment, release, commit or independent model-behavior benchmark is implied.
+Local verification on 2026-11-23: all commands above passed, including the provider-neutral contract regressions in 23 files, both runtime tests and relocated skill installation/diagnostics for all three supported local targets. The skill metadata validator and diff whitespace checks also passed. This records local synthetic validation; no live tool deployment or independent model-behavior benchmark is implied.

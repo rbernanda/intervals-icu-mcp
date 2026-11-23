@@ -13,7 +13,7 @@ Explain incomplete data and distinguish observations from interpretation.
 
 ## Expected orchestration
 
-1. Confirm the MCP registry exposes eleven read-only tools. Verify the athlete profile and timezone using `get_athlete_profile`; do not print identity in public diagnostics.
+1. Confirm the MCP registry exposes twelve read-only tools. Verify the athlete profile and timezone using `get_athlete_profile`; do not print identity in public diagnostics.
 2. Resolve dates using that timezone, excluding today for two completed seven-day windows. For an example athlete-local day **2026-03-09**, use current **March 2–8** and baseline **February 23–March 1**, inclusive.
 3. Invoke `compare_training_periods` with those explicit ranges and `sport_type: "running"`. Read the returned quality, coverage and provenance. Do not redo deterministic calculations.
 4. Optionally call `get_wellness` for relevant recovery context; missing HRV/RHR/sleep stay missing. Use `get_recent_activities` or details only for a specific observation requiring them.
