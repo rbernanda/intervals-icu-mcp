@@ -8,7 +8,7 @@ Adapt to the question and athlete's language. Omit irrelevant sections; keep imp
 
 ## Key metrics and execution
 
-{{Relevant source distance, moving/elapsed duration, pace, HR, elevation, cadence/power/load with units. Include interval consistency or explicitly paired planned-vs-actual work only when available.}}
+{{Relevant source distance, moving/elapsed duration, pace, HR, elevation, cadence/power/load with units. For existing-plan reviews, identify the prescription source/version scope, extraction completeness and source-linked or athlete-confirmed activity association. Show per-step target versus recorded distance, duration and pace where mapped, preserving elapsed rest and pace limits. Explain unknown steps and partial exports; do not substitute a new plan. Include interval consistency when relevant.}}
 
 ## Observations and interpretation
 

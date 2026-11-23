@@ -29,7 +29,7 @@ describe('project-scoped portable installation', () => {
       expect(await installSkill(options)).toBe('installed');
       expect(await installSkill(options)).toBe('unchanged');
       const path = join(root, AGENT_DIRECTORIES[agent], SKILL_NAME);
-      expect(await validateSkillDirectory(path)).toHaveLength(11);
+      expect(await validateSkillDirectory(path)).toHaveLength(12);
       const receipt = JSON.parse(await readFile(`${path}.install.json`, 'utf8')) as unknown;
       expect(receipt).toEqual({
         name: SKILL_NAME,
@@ -97,7 +97,7 @@ describe('project-scoped portable installation', () => {
     });
     await installSkill({ repository: source, project: root, agent: 'cursor' });
     await rm(source, { recursive: true });
-    expect(await validateSkillDirectory(join(root, '.cursor/skills', SKILL_NAME))).toHaveLength(11);
+    expect(await validateSkillDirectory(join(root, '.cursor/skills', SKILL_NAME))).toHaveLength(12);
   });
 });
 

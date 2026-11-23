@@ -35,7 +35,7 @@ describe('distributable training analyst skill', () => {
   });
 
   it('validates YAML, portable links, templates and canonical Codex symlink', async () => {
-    expect(await validateSkillPackage(process.cwd())).toHaveLength(11);
+    expect(await validateSkillPackage(process.cwd())).toHaveLength(12);
   });
 
   it.each([
@@ -54,7 +54,7 @@ describe('distributable training analyst skill', () => {
       await mkdir(join(root, '.agents/skills'), { recursive: true });
       await cp(join(process.cwd(), 'skills', SKILL_NAME), canonical, { recursive: true });
       await symlink(`../../skills/${SKILL_NAME}`, join(root, '.agents/skills', SKILL_NAME));
-      expect(await validateSkillPackage(root)).toHaveLength(11);
+      expect(await validateSkillPackage(root)).toHaveLength(12);
       await rm(join(canonical, 'assets/templates/weekly-review.md'));
       await expect(validateSkillPackage(root)).rejects.toThrow('Missing skill resource');
     } finally {
@@ -81,7 +81,9 @@ describe('distributable training analyst skill', () => {
       );
       const documented = [
         ...new Set(
-          [...mapping.matchAll(/`((?:get|compare|analyze)_[a-z_]+)`/g)].map((match) => match[1]),
+          [...mapping.matchAll(/`((?:get|compare|analyze|review)_[a-z_]+)`/g)].map(
+            (match) => match[1],
+          ),
         ),
       ].sort();
       expect(documented).toEqual(discovered.map((tool) => tool.name).sort());

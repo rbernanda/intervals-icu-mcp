@@ -11,6 +11,7 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fixtureFetch } from '../fixtures/data';
+import { executionRequestFixture } from '../fixtures/execution';
 import { issueToken, memoryKv, testEnv } from '../helpers';
 import { pkceChallenge } from '../../src/auth/github';
 import { dotenvContents } from '../../scripts/lib/files';
@@ -167,6 +168,7 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
         'analyze_aerobic_efficiency',
         'compare_running_workouts',
         'analyze_running_intervals',
+        'review_running_execution',
       ]) {
         expect(listed.stdout).toContain(name);
       }
@@ -243,6 +245,29 @@ it('runs the production bundle in workerd and passes MCP Inspector discovery and
       expect(intervalCall.stdout).toContain('running-intervals/1.0.0');
       expect(intervalCall.stdout).toContain('target_pace_difference_s_per_km');
       expect(intervalCall.stdout).not.toContain('MUST-NOT-LEAK');
+      const executionCall = await promisify(execFile)(
+        process.execPath,
+        [
+          ...args,
+          '--method',
+          'tools/call',
+          '--tool-name',
+          'review_running_execution',
+          '--tool-args-json',
+          JSON.stringify(executionRequestFixture()),
+        ],
+        {
+          timeout: 15000,
+          env: {
+            ...process.env,
+            MCP_INSPECTOR_OAUTH_STATE_PATH: join(directory, 'oauth.json'),
+            MCP_CLIENT_CONFIG_PATH: join(directory, 'client.json'),
+          },
+        },
+      );
+      expect(executionCall.stdout).toContain('running-execution/1.0.0');
+      expect(executionCall.stdout).toContain('within_range');
+      expect(executionCall.stdout).not.toContain('MUST-NOT-LEAK');
     }
 
     // Exercise the opt-in compatibility endpoint in the real runtime too.

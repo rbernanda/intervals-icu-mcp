@@ -31,7 +31,7 @@ chmod 600 /path/to/private-oauth-token
 pnpm run doctor --url https://your-worker.example.net/mcp --token-file /path/to/private-oauth-token
 ```
 
-The authenticated command initializes MCP, verifies eleven read-only tools, validates a profile, checks identity against `INTERVALS_ATHLETE_ID` from the selected local config when explicit (not `0`), retrieves at most one recent running activity, and invokes one deterministic period comparison. Payloads, tokens and athlete identifiers are withheld. It derives completed-day ranges in the profile timezone. Identity mismatch stops data analysis. Empty activity results warn; failed upstream access fails. The comparison's successful schema validation does not establish complete synchronization or useful training evidence.
+The authenticated command initializes MCP, verifies twelve read-only tools, validates a profile, checks identity against `INTERVALS_ATHLETE_ID` from the selected local config when explicit (not `0`), retrieves at most one recent running activity, and invokes one deterministic period comparison. Payloads, tokens and athlete identifiers are withheld. It derives completed-day ranges in the profile timezone. Identity mismatch stops data analysis. Empty activity results warn; failed upstream access fails. The comparison's successful schema validation does not establish complete synchronization or useful training evidence.
 
 Limits: 60-second overall HTTP deadline, 15 seconds per request, 1 MB per response, no cross-origin requests or followed redirects, at most three tool calls. Doctor tests use synthetic data. It cannot verify an LLM's skill choice or diagnose physiological readiness.
 

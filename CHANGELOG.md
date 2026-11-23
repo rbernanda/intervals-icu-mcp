@@ -2,6 +2,12 @@
 
 Repository releases use [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The historical v0.1/v0.2 names describe implementation milestones, not the already published repository tags. Published versions must not be replaced.
 
+## [Unreleased]
+
+- Add stateless `review_running_execution` for explicit existing-plan/activity association, per-step distance/duration/pace targets, source interval mapping and quality-aware comparison. Preserve moving versus elapsed rest and one-sided pace limits.
+- Add provider-neutral prescription attribution and optional read-only skill orchestration for available connected sources or user-supplied text/documents/exports. COROS is an optional retrieval example; unknown schedule dates remain unknown. Preserve degraded-export and original-prescription limitations. No duplicate plan, profile storage, provider credentials, writes or plan adaptation.
+- Add running-execution/1.0.0 calculation contract and twelve-tool development discovery; existing tool contracts and release identity remain unchanged pending review.
+
 ## [1.3.0] — 2026-11-22
 
 - Add read-only `analyze_running_intervals`: bounded repetition metrics, explicit work selection, target pace differences, coverage-aware work/recovery totals, descriptive pace consistency and timing-verified first/last changes.

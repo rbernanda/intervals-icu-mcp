@@ -15,6 +15,10 @@ import {
   intervalOptionsSchema,
   runningIntervalsSchema,
 } from '../analytics/sports/running/intervals';
+import {
+  executionOptionsSchema,
+  executionReviewSchema,
+} from '../analytics/sports/running/execution-review';
 
 const sportSchema = z
   .string()
@@ -38,6 +42,7 @@ export const inputs = {
     .object({ activity_id: activityIdSchema, include_intervals: z.boolean().default(false) })
     .strict(),
   runningIntervals: intervalOptionsSchema.extend({ activity_id: activityIdSchema }).strict(),
+  executionReview: executionOptionsSchema.safeExtend({ activity_id: activityIdSchema }).strict(),
   range: z.object(rangeShape).strict(),
   summary: z
     .object({
@@ -77,6 +82,11 @@ export const outputs = {
     ...contextShape,
     activity: activityOutputSchema,
     analysis: runningIntervalsSchema,
+  }),
+  executionReview: z.object({
+    ...contextShape,
+    activity: activityOutputSchema,
+    analysis: executionReviewSchema,
   }),
   fitness: z.object({
     ...contextShape,
