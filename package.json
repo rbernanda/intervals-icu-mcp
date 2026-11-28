@@ -35,7 +35,7 @@
     "test:fresh": "node --import tsx scripts/test-fresh-install.ts"
   },
   "dependencies": {
-    "@cloudflare/workers-oauth-provider": "1.2.4",
+    "@cloudflare/workers-oauth-provider": "1.3.0",
     "@modelcontextprotocol/server": "2.4.0",
     "zod": "^4.3.6"
   },
